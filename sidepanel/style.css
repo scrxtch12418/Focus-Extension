@@ -1,0 +1,410 @@
+:root {
+    /* Catppuccin Mocha Palette */
+    --ctp-rosewater: #f5e0dc;
+    --ctp-mauve: #cba6f7;
+    --ctp-red: #f38ba8;
+    --ctp-maroon: #eba0ac;
+    --ctp-peach: #fab387;
+    --ctp-yellow: #f9e2af;
+    --ctp-green: #a6e3a1;
+    --ctp-teal: #94e2d5;
+    --ctp-sky: #89dceb;
+    --ctp-sapphire: #74c7ec;
+    --ctp-blue: #89b4fa;
+    --ctp-lavender: #b4befe;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext: #a6adc8;
+    --ctp-surface0: #313244;
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-crust: #11111b;
+
+    --accent: var(--ctp-mauve);
+    --blur: blur(8px);
+}
+
+* {
+    font-family: 'Adwaita Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+body {
+    margin: 0;
+    padding: 16px;
+    /* Using Adwaita Mono with fallbacks */
+    background-color: var(--ctp-base);
+    color: var(--ctp-text);
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: var(--ctp-surface0);
+    border: 1px solid var(--ctp-surface0);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Media & Lofi Thumbnail Styles */
+.media-info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.thumbnail-placeholder {
+    width: 60px;
+    height: 60px;
+    background: var(--ctp-mantle);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.thumbnail-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Session Controls */
+.timer-adjuster {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.btn-circle {
+    border-radius: 9999px;
+    border: none;
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ctp-subtext);
+    padding: 10px;
+    padding-inline: 20px;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+#timer {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--ctp-peach);
+}
+
+.session-counter {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--ctp-subtext);
+    margin-top: 8px;
+}
+
+/* --- Media Player (Spotify Style) --- */
+.media-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px;
+}
+
+.thumbnail-large {
+    width: 180px;
+    /* Bigger, bolder presence */
+    height: 180px;
+    background: var(--ctp-mantle);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.thumbnail-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#trackTitle {
+    font-size: 1.1rem;
+    color: var(--ctp-text);
+    margin-bottom: 4px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Keeps long titles from breaking the card */
+}
+
+#trackArtist {
+    font-size: 0.9rem;
+    color: var(--ctp-subtext);
+    margin-bottom: 20px;
+}
+
+/* --- Styled Pomodoro Inputs --- */
+.session-setting {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    color: var(--ctp-subtext);
+    font-size: 0.9rem;
+}
+
+/* Custom styling for the number input */
+input[type="number"] {
+    background: var(--ctp-mantle);
+    border: 1px solid var(--ctp-surface1);
+    color: var(--ctp-peach);
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-family: inherit;
+    width: 50px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="number"]:focus {
+    border-color: var(--ctp-mauve);
+}
+
+/* --- Centered Big Action Button --- */
+.btn-primary {
+    display: block;
+    margin: 0 auto;
+    /* Centers the block element */
+    width: 80%;
+    padding: 14px;
+    background: var(--ctp-green);
+    color: var(--ctp-base);
+    border: none;
+    border-radius: 25px;
+    /* Pill shape */
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-circle:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.btn-circle:active {
+    transform: translateY(0);
+}
+
+/* --- Background & Layout Enhancements --- */
+body {
+    margin: 0;
+    padding: 16px;
+    font-family: 'Adwaita Mono', monospace;
+    /* A calm, deep space/nebula gradient that fits Catppuccin Mocha */
+    background: radial-gradient(circle at top left, #1e1e2e, #11111b);
+    background-attachment: fixed;
+    color: var(--ctp-text);
+}
+
+.card {
+    /* Making cards transparent (0.6 opacity) */
+    background: rgba(49, 50, 68, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+/* --- The Toggle Settings Menu --- */
+.settings-toggle {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--ctp-surface1);
+}
+
+.settings-content {
+    display: none;
+    /* Hidden by default */
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.settings-content.active {
+    display: flex;
+}
+
+.option-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+textarea {
+    background: var(--ctp-crust);
+    color: var(--ctp-text);
+    border: 1px solid var(--ctp-surface1);
+    border-radius: 8px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 0.75rem;
+    resize: vertical;
+}
+
+button#toggleSettings {
+    background: transparent;
+    color: var(--ctp-subtext);
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.settings-content {
+    display: flex;
+    /* Always flex, but hidden via height/opacity */
+    flex-direction: column;
+    gap: 15px;
+
+    /* Animation Properties */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s ease,
+        margin-top 0.3s ease;
+    margin-top: 0;
+}
+
+.settings-content.active {
+    max-height: 500px;
+    /* Set this higher than the content will ever be */
+    opacity: 1;
+    margin-top: 15px;
+}
+
+@keyframes focus-glow {
+    0% {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    50% {
+        border-color: var(--ctp-mauve);
+    }
+
+    100% {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.card.focus-active {
+    animation: focus-glow 3s infinite ease-in-out;
+    border-width: 1px;
+}
+
+/* Add to style.css */
+body {
+    transition: background 1.5s ease, color 0.5s ease;
+}
+
+/* Break Mode Theme */
+body.break-mode {
+    background: radial-gradient(circle at top left, #181825, #11111b);
+    --accent: var(--ctp-teal);
+    /* Teal is calmer than Mauve */
+    --ctp-peach: var(--ctp-teal);
+    /* Timer turns Teal */
+}
+
+body.break-mode .btn-primary {
+    background: var(--ctp-teal);
+}
+
+/* Subtle pulse for the restart button */
+#restartTimer:active {
+    transform: rotate(-12deg);
+    transition: 0.3s;
+}
+
+@keyframes zen-breathe {
+    0% {
+        background-size: 100% 100%;
+    }
+
+    50% {
+        background-size: 140% 140%;
+    }
+
+    /* Zooms in smoothly */
+    100% {
+        background-size: 100% 100%;
+    }
+}
+
+/* 2. Apply it to the body */
+body {
+    margin: 0;
+    padding: 16px;
+    background-color: var(--ctp-base);
+    color: var(--ctp-text);
+    min-height: 100vh;
+
+    /* Zen Mode Background Setup */
+    background: radial-gradient(circle at center, #1e1e2e, #11111b);
+    background-attachment: fixed;
+    background-position: center;
+
+    /* The 15-second breathing loop */
+    animation: zen-breathe 15s infinite ease-in-out;
+    transition: background 1.5s ease, color 0.5s ease;
+}
+
+/* 3. Stop the breathing during break mode so it feels distinct */
+body.break-mode {
+    background: radial-gradient(circle at center, #181825, #11111b);
+    animation: none;
+}

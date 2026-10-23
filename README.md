@@ -29,14 +29,19 @@ An all-in-one Chrome Extension (Manifest V3) designed for deep work, productivit
 ```
 Focus Extension/
 ├── manifest.json         # Extension configuration & Manifest V3 permissions
-├── background.js        # Service worker script
+├── background.js        # Service worker script (Alarms, timer state, media & blocking)
+├── icons/               # Extension icons (16px, 32px, 48px, 128px)
+│   ├── icon-16.png
+│   ├── icon-32.png
+│   ├── icon-48.png
+│   └── icon-128.png
 └── sidepanel/
     ├── index.html       # Side panel markup
-    ├── style.css        # Custom styles & design system
+    ├── style.css        # Catppuccin Mocha styles & design system
     ├── main.js          # Main UI controller & state management
-    ├── content.js       # Web page content script
+    ├── content.js       # Web page content script (Zen reader)
     ├── offscreen.html   # Offscreen document HTML
-    └── offscreen.js     # Offscreen audio & background timer logic
+    └── offscreen.js     # Offscreen audio stream logic
 ```
 
 ---
@@ -46,5 +51,6 @@ Focus Extension/
 1. Open **Google Chrome** and navigate to `chrome://extensions`.
 2. Enable **Developer mode** using the toggle switch in the top-right corner.
 3. Click **Load unpacked**.
-4. Select the `Focus Extension` folder (`c:\Projectss\Focus Extension`).
+4. Select this project's folder (`d:\Focus-Extension`).
 5. Open the extension from the Chrome toolbar or open the **Side Panel** (`Ctrl + Shift + Y` or click the extension icon).
+

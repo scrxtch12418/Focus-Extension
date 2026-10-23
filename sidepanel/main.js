@@ -2,8 +2,8 @@
 const popOutBtn = document.getElementById('popOutBtn');
 
 popOutBtn.addEventListener('click', () => {
-    // Get the exact URL of your extension's index.html
-    const extensionUrl = chrome.runtime.getURL('index.html');
+    // Get the exact URL of your extension's sidepanel/index.html
+    const extensionUrl = chrome.runtime.getURL('sidepanel/index.html');
 
     // Create a floating window that acts like a persistent side panel
     chrome.windows.create({
@@ -26,12 +26,16 @@ settingsBtn.addEventListener('click', () => {
 
 // --- Pomodoro Logic ---
 let timeLeft = 25 * 60;
+let currentMode = 'focus';
+let currentIsRunning = false;
+
 const timerDisplay = document.getElementById('timer');
 const incBtn = document.getElementById('incTime');
 const decBtn = document.getElementById('decTime');
 const startBtn = document.getElementById('startTimer');
 const restartBtn = document.getElementById('restartTimer');
 const completedDisplay = document.getElementById('completedSessions');
+const sessionTargetInput = document.getElementById('sessionTarget');
 
 function updateDisplay() {
     const mins = Math.floor(timeLeft / 60);
@@ -39,43 +43,60 @@ function updateDisplay() {
     timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
+function applyModeAndRunning(mode, isRunning) {
+    if (mode) currentMode = mode;
+    if (isRunning !== undefined) currentIsRunning = isRunning;
+
+    if (currentMode === 'break') {
+        document.body.classList.add('break-mode');
+        startBtn.textContent = currentIsRunning ? 'Pause Break' : 'Resume Break';
+        startBtn.style.background = currentIsRunning ? 'var(--ctp-red)' : 'var(--ctp-teal)';
+    } else {
+        document.body.classList.remove('break-mode');
+        startBtn.textContent = currentIsRunning ? 'Pause Session' : 'Start Focus';
+        startBtn.style.background = currentIsRunning ? 'var(--ctp-red)' : 'var(--ctp-green)';
+    }
+}
+
 function syncTimeWithBackground() {
     chrome.runtime.sendMessage({ type: 'SET_TIME', time: timeLeft });
 }
 
+// Fetch initial status from background service worker
 chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
     if (response) {
         timeLeft = response.timeLeft;
         updateDisplay();
-        if (response.isRunning) {
-            startBtn.textContent = 'Pause Session';
-            startBtn.style.background = 'var(--ctp-red)';
+        applyModeAndRunning(response.mode, response.isRunning);
+        if (response.completedSessions !== undefined) {
+            completedDisplay.textContent = response.completedSessions;
+        }
+        if (response.sessionTarget !== undefined && sessionTargetInput) {
+            sessionTargetInput.value = response.sessionTarget;
         }
     }
 });
 
 startBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
-        if (response.isRunning) {
+        if (response && response.isRunning) {
             chrome.runtime.sendMessage({ type: 'STOP_TIMER' });
-            startBtn.textContent = document.body.classList.contains('break-mode') ? 'Resume Break' : 'Start Focus';
-            startBtn.style.background = document.body.classList.contains('break-mode') ? 'var(--ctp-teal)' : 'var(--ctp-green)';
         } else {
             chrome.runtime.sendMessage({ type: 'START_TIMER' });
-            startBtn.textContent = 'Pause Session';
-            startBtn.style.background = 'var(--ctp-red)';
         }
     });
 });
 
 incBtn.addEventListener('click', () => {
-    timeLeft += 60;
-    updateDisplay();
-    syncTimeWithBackground();
+    if (!currentIsRunning && currentMode === 'focus') {
+        timeLeft += 60;
+        updateDisplay();
+        syncTimeWithBackground();
+    }
 });
 
 decBtn.addEventListener('click', () => {
-    if (timeLeft >= 120) {
+    if (!currentIsRunning && currentMode === 'focus' && timeLeft >= 120) {
         timeLeft -= 60;
         updateDisplay();
         syncTimeWithBackground();
@@ -83,41 +104,33 @@ decBtn.addEventListener('click', () => {
 });
 
 restartBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'STOP_TIMER' });
-    document.body.classList.remove('break-mode');
-    timeLeft = 25 * 60;
-    updateDisplay();
-    syncTimeWithBackground();
-    startBtn.textContent = 'Start Focus';
-    startBtn.style.background = 'var(--ctp-green)';
+    chrome.runtime.sendMessage({ type: 'RESET_TIMER' });
 });
 
-// --- Break / Work Transitions ---
+if (sessionTargetInput) {
+    sessionTargetInput.addEventListener('change', () => {
+        const target = Math.max(1, parseInt(sessionTargetInput.value) || 1);
+        sessionTargetInput.value = target;
+        chrome.runtime.sendMessage({ type: 'SET_SESSION_TARGET', target });
+        chrome.storage.local.set({ sessionTarget: target });
+    });
+}
+
+// --- Break / Work & Tick Listener ---
 chrome.runtime.onMessage.addListener((message) => {
-    if (message.type === 'TICK') {
-        timeLeft = message.timeLeft;
-        updateDisplay();
-    }
-
-    if (message.type === 'TIMER_FINISHED') {
-        const isCurrentlyBreaking = document.body.classList.contains('break-mode');
-
-        if (!isCurrentlyBreaking) {
-            document.body.classList.add('break-mode');
-            timeLeft = 5 * 60;
+    if (message.type === 'TICK' || message.type === 'TIMER_FINISHED' || message.type === 'TIMER_RESET') {
+        if (message.timeLeft !== undefined) {
+            timeLeft = message.timeLeft;
             updateDisplay();
-            syncTimeWithBackground();
-            chrome.runtime.sendMessage({ type: 'START_TIMER' });
-            startBtn.textContent = 'Pause Break';
-            startBtn.style.background = 'var(--ctp-red)';
-        } else {
-            document.body.classList.remove('break-mode');
-            timeLeft = 25 * 60;
-            updateDisplay();
-            syncTimeWithBackground();
-            startBtn.textContent = 'Start Focus';
-            startBtn.style.background = 'var(--ctp-green)';
-            completedDisplay.textContent = parseInt(completedDisplay.textContent) + 1;
+        }
+        if (message.mode !== undefined || message.isRunning !== undefined) {
+            applyModeAndRunning(message.mode, message.isRunning);
+        }
+        if (message.completedSessions !== undefined) {
+            completedDisplay.textContent = message.completedSessions;
+        }
+        if (message.sessionTarget !== undefined && sessionTargetInput) {
+            sessionTargetInput.value = message.sessionTarget;
         }
     }
 });
@@ -191,12 +204,16 @@ const removeJSToggle = document.getElementById('removeJS');
 
 removeJSToggle.addEventListener('change', async (e) => {
     chrome.storage.local.set({ cleanseActive: e.target.checked });
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab) {
-        chrome.tabs.sendMessage(tab.id, {
-            type: 'TRIGGER_CLEANSE',
-            state: e.target.checked
-        });
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab && tab.id) {
+            chrome.tabs.sendMessage(tab.id, {
+                type: 'TRIGGER_CLEANSE',
+                state: e.target.checked
+            }).catch(() => {});
+        }
+    } catch (err) {
+        console.error('Cleanse trigger error:', err);
     }
 });
 
@@ -204,7 +221,7 @@ chrome.storage.local.get(['cleanseActive'], (res) => {
     if (res.cleanseActive) removeJSToggle.checked = true;
 });
 
-// --- NEW: Lofi Logic ---
+// --- Lofi Logic ---
 const lofiToggle = document.getElementById('lofiToggle');
 lofiToggle.addEventListener('change', (e) => {
     chrome.runtime.sendMessage({ type: 'TOGGLE_LOFI', state: e.target.checked });

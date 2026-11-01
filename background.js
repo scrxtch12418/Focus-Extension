@@ -48,6 +48,84 @@ async function saveTimerState() {
     }
 }
 
+// ============================================================================
+// Daily Analytics & Streak Engine
+// ============================================================================
+function getTodayDateStr() {
+    return new Date().toISOString().split('T')[0];
+}
+
+async function getAnalytics() {
+    const today = getTodayDateStr();
+    const res = await chrome.storage.local.get(['analytics']);
+    let analytics = res.analytics || {
+        lastActiveDate: today,
+        streak: 0,
+        todayFocusSeconds: 0,
+        todaySessions: 0,
+        todayShortsIntercepted: 0,
+        history: {}
+    };
+
+    if (analytics.lastActiveDate !== today) {
+        // Rollover date
+        const lastDate = new Date(analytics.lastActiveDate);
+        const currDate = new Date(today);
+        const diffDays = Math.round((currDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        analytics.history = analytics.history || {};
+        analytics.history[analytics.lastActiveDate] = {
+            focusSeconds: analytics.todayFocusSeconds || 0,
+            sessions: analytics.todaySessions || 0,
+            shortsIntercepted: analytics.todayShortsIntercepted || 0
+        };
+
+        if (diffDays > 1) {
+            analytics.streak = 0; // Streak broken if gap is > 1 day
+        }
+
+        analytics.todayFocusSeconds = 0;
+        analytics.todaySessions = 0;
+        analytics.todayShortsIntercepted = 0;
+        analytics.lastActiveDate = today;
+
+        await chrome.storage.local.set({ analytics });
+    }
+
+    return analytics;
+}
+
+async function recordCompletedSession(durationSeconds) {
+    const analytics = await getAnalytics();
+    analytics.todaySessions = (analytics.todaySessions || 0) + 1;
+    analytics.todayFocusSeconds = (analytics.todayFocusSeconds || 0) + (durationSeconds || 1500);
+
+    if (analytics.streak === 0) {
+        analytics.streak = 1;
+    } else {
+        analytics.streak = Math.max(1, analytics.streak);
+    }
+
+    await chrome.storage.local.set({ analytics });
+    broadcastAnalytics();
+}
+
+async function recordShortsInterception() {
+    const analytics = await getAnalytics();
+    analytics.todayShortsIntercepted = (analytics.todayShortsIntercepted || 0) + 1;
+    await chrome.storage.local.set({ analytics });
+    broadcastAnalytics();
+}
+
+function broadcastAnalytics() {
+    getAnalytics().then(analytics => {
+        chrome.runtime.sendMessage({
+            type: 'ANALYTICS_UPDATE',
+            analytics
+        }).catch(() => {});
+    });
+}
+
 // Chrome Alarm Listener for persistent MV3 timer triggers
 chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === 'focusTimer') {
@@ -55,6 +133,62 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     }
 });
 
+// Global Keyboard Shortcuts
+chrome.commands.onCommand.addListener(async (command) => {
+    if (command === 'toggle_timer') {
+        if (timerState.isRunning) {
+            await stopTimer();
+        } else {
+            await startTimer();
+        }
+    } else if (command === 'toggle_audio') {
+        await toggleAmbientAudio();
+    } else if (command === 'clean_article') {
+        await toggleActiveTabCleanse();
+    }
+});
+
+async function toggleAmbientAudio() {
+    const res = await chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume']);
+    const willPlay = !res.ambientPlaying;
+    const soundscape = res.currentSoundscape || 'lofi';
+    const volume = res.ambientVolume !== undefined ? res.ambientVolume : 0.5;
+
+    await setupOffscreenDocument();
+    chrome.runtime.sendMessage({
+        target: 'offscreen',
+        type: willPlay ? 'PLAY_SOUNDSCAPE' : 'PAUSE_SOUNDSCAPE',
+        soundscape,
+        volume
+    }).catch(() => {});
+
+    await chrome.storage.local.set({ ambientPlaying: willPlay });
+    chrome.runtime.sendMessage({
+        type: 'AMBIENT_STATE_CHANGED',
+        isPlaying: willPlay,
+        soundscape,
+        volume
+    }).catch(() => {});
+}
+
+async function toggleActiveTabCleanse() {
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab && tab.id) {
+            const res = await chrome.storage.local.get(['cleanseActive']);
+            const nextState = !res.cleanseActive;
+            await chrome.storage.local.set({ cleanseActive: nextState });
+            chrome.tabs.sendMessage(tab.id, {
+                type: 'TRIGGER_CLEANSE',
+                state: nextState
+            }).catch(() => {});
+        }
+    } catch (e) {
+        console.error('Hotkey cleanse error:', e);
+    }
+}
+
+// Runtime message dispatcher
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'START_TIMER') {
         startTimer();
@@ -64,6 +198,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         resetTimer();
     } else if (message.type === 'GET_STATUS') {
         sendResponse(getCurrentStatus());
+    } else if (message.type === 'GET_ANALYTICS') {
+        getAnalytics().then(analytics => sendResponse(analytics));
+        return true;
+    } else if (message.type === 'RECORD_INTERCEPTION') {
+        recordShortsInterception();
     } else if (message.type === 'SET_TIME') {
         if (!timerState.isRunning && timerState.mode === 'focus') {
             timerState.focusDuration = message.time;
@@ -81,7 +220,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     } else if (message.type === 'UPDATE_BLOCK_SETTINGS') {
         updateBlockRules(message.blockAll, message.blockedSites);
+    } else if (message.type === 'PLAY_SOUNDSCAPE') {
+        setupOffscreenDocument().then(() => {
+            chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'PLAY_SOUNDSCAPE',
+                soundscape: message.soundscape,
+                volume: message.volume
+            }).catch(() => {});
+        });
+    } else if (message.type === 'PAUSE_SOUNDSCAPE') {
+        setupOffscreenDocument().then(() => {
+            chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'PAUSE_SOUNDSCAPE'
+            }).catch(() => {});
+        });
+    } else if (message.type === 'SET_AMBIENT_VOLUME') {
+        setupOffscreenDocument().then(() => {
+            chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'SET_AMBIENT_VOLUME',
+                volume: message.volume
+            }).catch(() => {});
+        });
     } else if (message.type === 'TOGGLE_LOFI') {
+        // Backward compatibility
         setupOffscreenDocument().then(() => {
             chrome.runtime.sendMessage({
                 target: 'offscreen',
@@ -157,6 +321,21 @@ async function handleTimerFinished() {
                 : `Great focus! Time for a 5-minute break. (Session ${timerState.completedSessions}/${timerState.sessionTarget})`
         });
 
+        // Record completed session in analytics
+        await recordCompletedSession(timerState.focusDuration);
+
+        // Play gentle Tibetan singing bowl chime if enabled
+        const chimeData = await chrome.storage.local.get(['timerChimeEnabled']);
+        if (chimeData.timerChimeEnabled !== false) {
+            setupOffscreenDocument().then(() => {
+                chrome.runtime.sendMessage({
+                    target: 'offscreen',
+                    type: 'PLAY_CHIME',
+                    mode: 'focus'
+                }).catch(() => {});
+            });
+        }
+
         // Automatically switch to break mode and start break timer
         timerState.mode = 'break';
         timerState.timeLeft = timerState.breakDuration;
@@ -172,6 +351,18 @@ async function handleTimerFinished() {
             title: '☕ Break Over!',
             message: 'Ready to shift gears and dive back into focus?'
         });
+
+        // Play pleasant two-tone break chime if enabled
+        const chimeData = await chrome.storage.local.get(['timerChimeEnabled']);
+        if (chimeData.timerChimeEnabled !== false) {
+            setupOffscreenDocument().then(() => {
+                chrome.runtime.sendMessage({
+                    target: 'offscreen',
+                    type: 'PLAY_CHIME',
+                    mode: 'break'
+                }).catch(() => {});
+            });
+        }
 
         // Switch back to focus mode and wait for user start
         timerState.mode = 'focus';
@@ -358,7 +549,7 @@ async function updateBlockRules(isBlockingAll, blockedList) {
     }
 }
 
-// --- Lofi Offscreen Setup ---
+// --- Audio Offscreen Setup ---
 async function setupOffscreenDocument() {
     try {
         const existingContexts = await chrome.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT'] });
@@ -367,7 +558,7 @@ async function setupOffscreenDocument() {
         await chrome.offscreen.createDocument({
             url: 'sidepanel/offscreen.html',
             reasons: ['AUDIO_PLAYBACK'],
-            justification: 'Playing Lofi radio for focus mode'
+            justification: 'Playing ambient soundscapes and meditation chimes for focus'
         });
     } catch (e) {
         console.error('Error setting up offscreen document:', e);

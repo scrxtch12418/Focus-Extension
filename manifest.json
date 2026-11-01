@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "name": "Focus Command Center",
-    "version": "1.0",
-    "description": "All-in-one media, pomodoro, and article focus tool.",
+    "version": "1.1",
+    "description": "All-in-one Pomodoro timer, ambient soundscapes, anti-doomscroll blocker, and article focus dashboard.",
     "permissions": [
         "sidePanel",
         "tabs",
@@ -17,6 +17,29 @@
     "host_permissions": [
         "<all_urls>"
     ],
+    "commands": {
+        "toggle_timer": {
+            "suggested_key": {
+                "default": "Alt+Shift+F",
+                "mac": "Alt+Shift+F"
+            },
+            "description": "Start or pause focus timer"
+        },
+        "toggle_audio": {
+            "suggested_key": {
+                "default": "Alt+Shift+M",
+                "mac": "Alt+Shift+M"
+            },
+            "description": "Toggle ambient soundscapes & lofi"
+        },
+        "clean_article": {
+            "suggested_key": {
+                "default": "Alt+Shift+Z",
+                "mac": "Alt+Shift+Z"
+            },
+            "description": "Toggle Zen Reader (Clean Article) on active page"
+        }
+    },
     "icons": {
         "16": "icons/icon-16.png",
         "32": "icons/icon-32.png",

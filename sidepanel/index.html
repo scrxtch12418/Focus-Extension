@@ -9,13 +9,34 @@
 <body>
     <div class="container">
         <header
-            style="display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 20px;">
-            <h1 style="margin: 0;">Focus Center</h1>
+            style="display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 16px;">
+            <h1 style="margin: 0; font-size: 1.5rem; letter-spacing: -0.5px;">Focus Center</h1>
             <button id="popOutBtn" title="Open in floating window"
                 style="position: absolute; right: 0; background: transparent; border: none; color: var(--ctp-subtext); cursor: pointer; font-size: 1.2rem; transition: color 0.2s;">
                 ⧉
             </button>
         </header>
+
+        <!-- Daily Focus Analytics & Streaks -->
+        <section class="card analytics-card">
+            <div class="analytics-grid">
+                <div class="stat-box">
+                    <span class="stat-icon">🔥</span>
+                    <div class="stat-value" id="streakCount">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-icon">⏱️</span>
+                    <div class="stat-value" id="todayFocusTime">0m</div>
+                    <div class="stat-label">Focused Today</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-icon">🛑</span>
+                    <div class="stat-value" id="todayIntercepted">0</div>
+                    <div class="stat-label">Shorts Avoided</div>
+                </div>
+            </div>
+        </section>
 
         <section class="card media-card">
             <div class="thumbnail-large" id="mediaThumb">
@@ -32,6 +53,14 @@
         </section>
 
         <section class="card">
+            <div class="active-focus-container" id="activeFocusContainer">
+                <div class="active-focus-label">🎯 Current Focus Goal</div>
+                <div class="active-focus-bar">
+                    <span id="activeFocusText" class="active-focus-text">No active task set</span>
+                    <button id="quickCompleteTaskBtn" class="btn-micro" title="Mark focus task complete" style="display: none;">✓ Done</button>
+                </div>
+            </div>
+
             <div class="timer-adjuster">
                 <button class="btn-circle" id="decTime">-</button>
                 <div id="timer">25:00</div>
@@ -43,21 +72,69 @@
                 <input type="number" id="sessionTarget" value="4" min="1">
             </div>
 
-            <div class="option-row" style="margin-bottom: 20px; justify-content: center; gap: 15px;">
-                <span>Ambient Lofi Radio</span>
-                <input type="checkbox" id="lofiToggle" class="slider-input">
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                 <button id="startTimer" class="btn-primary" style="flex: 3;">Start Focus</button>
                 <button id="restartTimer" class="btn-circle" style="flex: 1; border-radius: 25px;">↺</button>
             </div>
 
             <div class="session-counter">Completed: <span id="completedSessions">0</span></div>
 
+            <!-- Ambient Soundscapes Switcher -->
+            <div class="ambient-container">
+                <div class="ambient-header">
+                    <span style="font-weight: 700; font-size: 0.8rem; color: var(--ctp-text);">🎧 Ambient Soundscapes</span>
+                    <button id="soundscapeToggle" class="btn-sound-toggle" title="Toggle audio">▶ Play</button>
+                </div>
+                <div class="ambient-controls">
+                    <select id="soundscapeSelect" class="soundscape-select">
+                        <option value="lofi">🎵 Lofi Radio</option>
+                        <option value="rain">🌧️ Rain & Storm</option>
+                        <option value="noise">📻 Deep Brown Noise</option>
+                        <option value="ocean">🌊 Ocean Waves</option>
+                        <option value="cafe">☕ Cozy Café</option>
+                    </select>
+                    <div class="volume-slider-box">
+                        <span style="font-size: 0.85rem;" title="Volume">🔉</span>
+                        <input type="range" id="soundscapeVolume" min="0" max="100" value="50" class="volume-slider">
+                        <span id="volumePercent" class="volume-percent">50%</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="settings-toggle">
                 <button id="toggleSettings">Focus Rules ⚙️</button>
                 <div id="settingsMenu" class="settings-content">
+                    <div class="option-row">
+                        <div>
+                            <span>Doomscroll Nudge</span>
+                            <div style="font-size: 0.72rem; color: var(--ctp-subtext);">Alert when scrolling Shorts & Reels</div>
+                        </div>
+                        <input type="checkbox" id="doomscrollToggle" class="slider-input" checked>
+                    </div>
+
+                    <div class="option-row">
+                        <div>
+                            <span>Shorts Daily Allowance</span>
+                            <div style="font-size: 0.72rem; color: var(--ctp-subtext);">Daily limit before strict lock</div>
+                        </div>
+                        <select id="shortsAllowance" class="styled-select">
+                            <option value="0">Strict (0m)</option>
+                            <option value="5">5 mins</option>
+                            <option value="10">10 mins</option>
+                            <option value="15" selected>15 mins (Default)</option>
+                            <option value="30">30 mins</option>
+                            <option value="-1">Unlimited</option>
+                        </select>
+                    </div>
+
+                    <div class="option-row">
+                        <div>
+                            <span>Timer Chime Bell</span>
+                            <div style="font-size: 0.72rem; color: var(--ctp-subtext);">Singing bowl chime on finish</div>
+                        </div>
+                        <input type="checkbox" id="timerChimeToggle" class="slider-input" checked>
+                    </div>
+
                     <div class="option-row">
                         <span>Block All Sites</span>
                         <input type="checkbox" id="blockAll" class="slider-input">
@@ -72,8 +149,41 @@
                         <span>Remove JS (Clean Article)</span>
                         <input type="checkbox" id="removeJS" class="slider-input">
                     </div>
+
+                    <div class="shortcuts-guide">
+                        <div class="shortcuts-title">⚡ Global Keyboard Shortcuts</div>
+                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> <span>Start/Pause Timer</span></div>
+                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> <span>Toggle Ambient Audio</span></div>
+                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> <span>Clean Article Reader</span></div>
+                    </div>
                 </div>
             </div>
+        </section>
+
+        <section class="card todo-card">
+            <div class="todo-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.1rem;">📝</span>
+                    <h2 style="margin: 0; font-size: 1rem; color: var(--ctp-text); font-weight: 700;">Focus Tasks</h2>
+                    <span id="todoBadge" class="todo-badge">0/0</span>
+                </div>
+                <button id="clearCompletedBtn" class="btn-text-sm" title="Clear completed tasks">Clear Done</button>
+            </div>
+
+            <form id="todoForm" class="todo-input-row">
+                <input type="text" id="todoInput" placeholder="Add a focus task... (Press Enter)" maxlength="140" autocomplete="off">
+                <button type="submit" id="addTodoBtn" class="btn-add" title="Add Task">+</button>
+            </form>
+
+            <div class="todo-filters">
+                <button type="button" class="filter-btn active" data-filter="all">All</button>
+                <button type="button" class="filter-btn" data-filter="active">Active</button>
+                <button type="button" class="filter-btn" data-filter="completed">Done</button>
+            </div>
+
+            <ul id="todoList" class="todo-list">
+                <!-- Tasks will be rendered here dynamically -->
+            </ul>
         </section>
     </div>
     <script src="main.js"></script>

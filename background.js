@@ -1,6 +1,16 @@
 const DEFAULT_FOCUS_TIME = 25 * 60;
 const DEFAULT_BREAK_TIME = 5 * 60;
 
+const SOUNDSCAPE_LIST = ['lofi', 'rain', 'noise', 'ocean', 'cafe', 'binaural'];
+const SOUNDSCAPE_TITLES = {
+    'lofi': 'Lofi Chill Radio',
+    'rain': 'Rain & Thunder Storm',
+    'noise': 'Deep Brown Noise',
+    'ocean': 'Ocean Waves',
+    'cafe': 'Cozy Café Ambience',
+    'binaural': '40Hz Gamma Focus'
+};
+
 let timerInterval = null;
 let timerState = {
     timeLeft: DEFAULT_FOCUS_TIME,
@@ -68,7 +78,6 @@ async function getAnalytics() {
     };
 
     if (analytics.lastActiveDate !== today) {
-        // Rollover date
         const lastDate = new Date(analytics.lastActiveDate);
         const currDate = new Date(today);
         const diffDays = Math.round((currDate - lastDate) / (1000 * 60 * 60 * 24));
@@ -81,7 +90,7 @@ async function getAnalytics() {
         };
 
         if (diffDays > 1) {
-            analytics.streak = 0; // Streak broken if gap is > 1 day
+            analytics.streak = 0;
         }
 
         analytics.todayFocusSeconds = 0;
@@ -163,9 +172,13 @@ async function toggleAmbientAudio() {
     }).catch(() => {});
 
     await chrome.storage.local.set({ ambientPlaying: willPlay });
+    broadcastAmbientState(willPlay, soundscape, volume);
+}
+
+function broadcastAmbientState(isPlaying, soundscape, volume) {
     chrome.runtime.sendMessage({
         type: 'AMBIENT_STATE_CHANGED',
-        isPlaying: willPlay,
+        isPlaying,
         soundscape,
         volume
     }).catch(() => {});
@@ -185,6 +198,46 @@ async function toggleActiveTabCleanse() {
         }
     } catch (e) {
         console.error('Hotkey cleanse error:', e);
+    }
+}
+
+async function handleBuiltinMediaCommand(action) {
+    const res = await chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume']);
+    let isPlaying = !!res.ambientPlaying;
+    let currentSoundscape = res.currentSoundscape || 'lofi';
+    let volume = res.ambientVolume !== undefined ? res.ambientVolume : 0.5;
+
+    if (action === 'playpause') {
+        isPlaying = !isPlaying;
+        await setupOffscreenDocument();
+        chrome.runtime.sendMessage({
+            target: 'offscreen',
+            type: isPlaying ? 'PLAY_SOUNDSCAPE' : 'PAUSE_SOUNDSCAPE',
+            soundscape: currentSoundscape,
+            volume
+        }).catch(() => {});
+        await chrome.storage.local.set({ ambientPlaying: isPlaying });
+        broadcastAmbientState(isPlaying, currentSoundscape, volume);
+    } else if (action === 'next' || action === 'prev') {
+        const idx = SOUNDSCAPE_LIST.indexOf(currentSoundscape);
+        let nextIdx = 0;
+        if (action === 'next') {
+            nextIdx = (idx + 1) % SOUNDSCAPE_LIST.length;
+        } else {
+            nextIdx = (idx - 1 + SOUNDSCAPE_LIST.length) % SOUNDSCAPE_LIST.length;
+        }
+        currentSoundscape = SOUNDSCAPE_LIST[nextIdx];
+        await setupOffscreenDocument();
+        if (isPlaying) {
+            chrome.runtime.sendMessage({
+                target: 'offscreen',
+                type: 'PLAY_SOUNDSCAPE',
+                soundscape: currentSoundscape,
+                volume
+            }).catch(() => {});
+        }
+        await chrome.storage.local.set({ currentSoundscape });
+        broadcastAmbientState(isPlaying, currentSoundscape, volume);
     }
 }
 
@@ -242,14 +295,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 target: 'offscreen',
                 type: 'SET_AMBIENT_VOLUME',
                 volume: message.volume
-            }).catch(() => {});
-        });
-    } else if (message.type === 'TOGGLE_LOFI') {
-        // Backward compatibility
-        setupOffscreenDocument().then(() => {
-            chrome.runtime.sendMessage({
-                target: 'offscreen',
-                type: message.state ? 'PLAY_LOFI' : 'PAUSE_LOFI'
             }).catch(() => {});
         });
     }
@@ -321,10 +366,8 @@ async function handleTimerFinished() {
                 : `Great focus! Time for a 5-minute break. (Session ${timerState.completedSessions}/${timerState.sessionTarget})`
         });
 
-        // Record completed session in analytics
         await recordCompletedSession(timerState.focusDuration);
 
-        // Play gentle Tibetan singing bowl chime if enabled
         const chimeData = await chrome.storage.local.get(['timerChimeEnabled']);
         if (chimeData.timerChimeEnabled !== false) {
             setupOffscreenDocument().then(() => {
@@ -336,7 +379,6 @@ async function handleTimerFinished() {
             });
         }
 
-        // Automatically switch to break mode and start break timer
         timerState.mode = 'break';
         timerState.timeLeft = timerState.breakDuration;
         timerState.isRunning = true;
@@ -344,7 +386,6 @@ async function handleTimerFinished() {
         chrome.alarms.create('focusTimer', { when: timerState.targetEndTime });
         startTickLoop();
     } else {
-        // Break mode finished
         chrome.notifications.create({
             type: 'basic',
             iconUrl: 'icons/icon-128.png',
@@ -352,7 +393,6 @@ async function handleTimerFinished() {
             message: 'Ready to shift gears and dive back into focus?'
         });
 
-        // Play pleasant two-tone break chime if enabled
         const chimeData = await chrome.storage.local.get(['timerChimeEnabled']);
         if (chimeData.timerChimeEnabled !== false) {
             setupOffscreenDocument().then(() => {
@@ -364,7 +404,6 @@ async function handleTimerFinished() {
             });
         }
 
-        // Switch back to focus mode and wait for user start
         timerState.mode = 'focus';
         timerState.timeLeft = timerState.focusDuration;
         timerState.isRunning = false;
@@ -407,9 +446,7 @@ function broadcastStatus(type) {
         mode: timerState.mode,
         completedSessions: timerState.completedSessions,
         sessionTarget: timerState.sessionTarget
-    }).catch(() => {
-        // Suppress error if popup / side panel is not open
-    });
+    }).catch(() => {});
 }
 
 async function executeMediaCommand(action) {
@@ -420,7 +457,11 @@ async function executeMediaCommand(action) {
             tabs = await chrome.tabs.query({ url: ["*://*.youtube.com/*", "*://*.spotify.com/*"] });
         }
 
-        if (tabs.length === 0 || !tabs[0].id) return;
+        // If no active external media tabs, control built-in soundscape player!
+        if (tabs.length === 0 || !tabs[0].id) {
+            await handleBuiltinMediaCommand(action);
+            return;
+        }
 
         const targetTab = tabs[0];
 
@@ -473,7 +514,17 @@ async function fetchMediaInfo() {
         }
 
         if (tabs.length === 0 || !tabs[0].id) {
-            return { title: 'No Media Detected', artist: 'Start playing music...', art: '' };
+            const res = await chrome.storage.local.get(['ambientPlaying', 'currentSoundscape']);
+            const current = res.currentSoundscape || 'lofi';
+            const title = SOUNDSCAPE_TITLES[current] || 'Lofi Focus Radio';
+            return {
+                title,
+                artist: 'Focus Command Center • 24/7 Deep Work',
+                art: '',
+                isBuiltin: true,
+                isPlaying: !!res.ambientPlaying,
+                soundscape: current
+            };
         }
 
         const targetTab = tabs[0];
@@ -504,9 +555,9 @@ async function fetchMediaInfo() {
                 };
             }
         });
-        return result || { title: 'No Media Detected', artist: 'Start playing music...', art: '' };
+        return result || { title: 'Lofi Focus Radio', artist: 'Focus Center', art: '' };
     } catch (error) {
-        return { title: 'No Media Detected', artist: 'Start playing music...', art: '' };
+        return { title: 'Lofi Focus Radio', artist: 'Focus Center', art: '' };
     }
 }
 
@@ -549,7 +600,7 @@ async function updateBlockRules(isBlockingAll, blockedList) {
     }
 }
 
-// --- Audio Offscreen Setup ---
+// --- Audio Offscreen Setup with warm-up handshake ---
 async function setupOffscreenDocument() {
     try {
         const existingContexts = await chrome.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT'] });
@@ -560,6 +611,8 @@ async function setupOffscreenDocument() {
             reasons: ['AUDIO_PLAYBACK'],
             justification: 'Playing ambient soundscapes and meditation chimes for focus'
         });
+        // Give the offscreen document time to execute and register listeners
+        await new Promise(resolve => setTimeout(resolve, 150));
     } catch (e) {
         console.error('Error setting up offscreen document:', e);
     }

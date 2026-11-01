@@ -1,28 +1,242 @@
-// --- Pop-out Window Logic ---
+// Focus Command Center — Main Side Panel & Popup Controller
+
+// ============================================================================
+// 1. Lucide Icons Injection
+// ============================================================================
+function injectLucideIcons() {
+    if (typeof getLucideSvg !== 'function') return;
+
+    // Header & Actions
+    const brandIcon = document.getElementById('brandIcon');
+    if (brandIcon) brandIcon.innerHTML = getLucideSvg('sparkles', 18);
+
+    const themeBtnIcon = document.getElementById('themeBtnIcon');
+    if (themeBtnIcon) themeBtnIcon.innerHTML = getLucideSvg('palette', 16);
+
+    const popOutBtnIcon = document.getElementById('popOutBtnIcon');
+    if (popOutBtnIcon) popOutBtnIcon.innerHTML = getLucideSvg('external-link', 16);
+
+    // Analytics Icons
+    const streakIcon = document.getElementById('streakIcon');
+    if (streakIcon) streakIcon.innerHTML = getLucideSvg('flame', 18);
+
+    const focusedIcon = document.getElementById('focusedIcon');
+    if (focusedIcon) focusedIcon.innerHTML = getLucideSvg('clock', 18);
+
+    const interceptedIcon = document.getElementById('interceptedIcon');
+    if (interceptedIcon) interceptedIcon.innerHTML = getLucideSvg('shield-alert', 18);
+
+    // Media Icons
+    const discCenterIcon = document.getElementById('discCenterIcon');
+    if (discCenterIcon) discCenterIcon.innerHTML = getLucideSvg('music', 18);
+
+    const prevIcon = document.getElementById('prevIcon');
+    if (prevIcon) prevIcon.innerHTML = getLucideSvg('skip-back', 18);
+
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    if (playPauseIcon) playPauseIcon.innerHTML = getLucideSvg('play', 22);
+
+    const nextIcon = document.getElementById('nextIcon');
+    if (nextIcon) nextIcon.innerHTML = getLucideSvg('skip-forward', 18);
+
+    const volumeIcon = document.getElementById('volumeIcon');
+    if (volumeIcon) volumeIcon.innerHTML = getLucideSvg('volume-2', 15);
+
+    // Pomodoro Icons
+    const targetGoalIcon = document.getElementById('targetGoalIcon');
+    if (targetGoalIcon) targetGoalIcon.innerHTML = getLucideSvg('target', 14);
+
+    const checkDoneIcon = document.getElementById('checkDoneIcon');
+    if (checkDoneIcon) checkDoneIcon.innerHTML = getLucideSvg('check', 12);
+
+    const minusIcon = document.getElementById('minusIcon');
+    if (minusIcon) minusIcon.innerHTML = getLucideSvg('minus', 16);
+
+    const plusIcon = document.getElementById('plusIcon');
+    if (plusIcon) plusIcon.innerHTML = getLucideSvg('plus', 16);
+
+    const resetIcon = document.getElementById('resetIcon');
+    if (resetIcon) resetIcon.innerHTML = getLucideSvg('rotate-ccw', 16);
+
+    const headphonesIcon = document.getElementById('headphonesIcon');
+    if (headphonesIcon) headphonesIcon.innerHTML = getLucideSvg('headphones', 16);
+
+    const rulesSettingsIcon = document.getElementById('rulesSettingsIcon');
+    if (rulesSettingsIcon) rulesSettingsIcon.innerHTML = getLucideSvg('sliders', 16);
+
+    // Tasks Icons
+    const tasksHeaderIcon = document.getElementById('tasksHeaderIcon');
+    if (tasksHeaderIcon) tasksHeaderIcon.innerHTML = getLucideSvg('list-todo', 18);
+
+    const addTaskIcon = document.getElementById('addTaskIcon');
+    if (addTaskIcon) addTaskIcon.innerHTML = getLucideSvg('plus', 18);
+
+    // Theme Modal Icons
+    const themeModalHeaderIcon = document.getElementById('themeModalHeaderIcon');
+    if (themeModalHeaderIcon) themeModalHeaderIcon.innerHTML = getLucideSvg('sparkles', 18);
+
+    const closeThemeIcon = document.getElementById('closeThemeIcon');
+    if (closeThemeIcon) closeThemeIcon.innerHTML = getLucideSvg('x', 16);
+}
+
+injectLucideIcons();
+
+// --- Pop-out Floating Window Logic ---
 const popOutBtn = document.getElementById('popOutBtn');
-
-popOutBtn.addEventListener('click', () => {
-    const extensionUrl = chrome.runtime.getURL('sidepanel/index.html');
-    chrome.windows.create({
-        url: extensionUrl,
-        type: 'popup',
-        width: 400,
-        height: 750,
-        focused: true
+if (popOutBtn) {
+    popOutBtn.addEventListener('click', () => {
+        const extensionUrl = chrome.runtime.getURL('sidepanel/index.html');
+        chrome.windows.create({
+            url: extensionUrl,
+            type: 'popup',
+            width: 400,
+            height: 750,
+            focused: true
+        });
     });
-});
+}
 
-// --- Settings Toggle ---
-const settingsBtn = document.getElementById('toggleSettings');
-const settingsMenu = document.getElementById('settingsMenu');
+// ============================================================================
+// 2. Arc-Style Theme Studio (2D Chromatic Grid Color Picker)
+// ============================================================================
+const openThemeBtn = document.getElementById('openThemeBtn');
+const closeThemeBtn = document.getElementById('closeThemeBtn');
+const themeModal = document.getElementById('themeModal');
+const resetThemeBtn = document.getElementById('resetThemeBtn');
+const arcColorGrid = document.getElementById('arcColorGrid');
+const arcPickerHandle = document.getElementById('arcPickerHandle');
+const themePreviewChip = document.getElementById('themePreviewChip');
+const themeHslValue = document.getElementById('themeHslValue');
+const themeColorName = document.getElementById('themeColorName');
+const presetPills = document.querySelectorAll('.preset-pill');
 
-settingsBtn.addEventListener('click', () => {
-    const isActive = settingsMenu.classList.toggle('active');
-    settingsBtn.textContent = isActive ? 'Close Rules ✖' : 'Focus Rules ⚙️';
+let isDraggingGrid = false;
+let currentTheme = { h: 267, s: 83, l: 60 };
+
+function applyTheme(h, s, l, save = true) {
+    currentTheme = { h, s, l };
+    document.documentElement.style.setProperty('--theme-h', h.toString());
+    document.documentElement.style.setProperty('--theme-s', `${s}%`);
+    document.documentElement.style.setProperty('--theme-l', `${l}%`);
+
+    if (themeHslValue) themeHslValue.textContent = `HSL: ${h}°, ${s}%, ${l}%`;
+
+    if (save) {
+        chrome.storage.local.set({ customTheme: currentTheme });
+    }
+}
+
+function updateHandleFromCoords(x, y) {
+    if (!arcColorGrid || !arcPickerHandle) return;
+    const rect = arcColorGrid.getBoundingClientRect();
+    const clampedX = Math.max(0, Math.min(rect.width, x));
+    const clampedY = Math.max(0, Math.min(rect.height, y));
+
+    const percentX = clampedX / rect.width;
+    const percentY = clampedY / rect.height;
+
+    arcPickerHandle.style.left = `${clampedX}px`;
+    arcPickerHandle.style.top = `${clampedY}px`;
+
+    // Calculate Hue (0 to 360) and Lightness/Saturation
+    const h = Math.round(percentX * 360);
+    const s = Math.round(92 - (percentY * 22)); // 70% to 92%
+    const l = Math.round(72 - (percentY * 34)); // 38% to 72%
+
+    applyTheme(h, s, l, true);
+}
+
+function setHandleFromHsl(h, s, l) {
+    if (!arcColorGrid || !arcPickerHandle) return;
+    const rect = arcColorGrid.getBoundingClientRect();
+    if (rect.width === 0) return;
+
+    const percentX = (h % 360) / 360;
+    const percentY = Math.max(0, Math.min(1, (72 - l) / 34));
+
+    arcPickerHandle.style.left = `${percentX * rect.width}px`;
+    arcPickerHandle.style.top = `${percentY * rect.height}px`;
+}
+
+if (openThemeBtn && themeModal) {
+    openThemeBtn.addEventListener('click', () => {
+        themeModal.style.display = 'flex';
+        setTimeout(() => {
+            setHandleFromHsl(currentTheme.h, currentTheme.s, currentTheme.l);
+        }, 50);
+    });
+}
+
+if (closeThemeBtn && themeModal) {
+    closeThemeBtn.addEventListener('click', () => {
+        themeModal.style.display = 'none';
+    });
+}
+
+if (themeModal) {
+    themeModal.addEventListener('click', (e) => {
+        if (e.target === themeModal) themeModal.style.display = 'none';
+    });
+}
+
+if (arcColorGrid) {
+    function handlePointer(e) {
+        const rect = arcColorGrid.getBoundingClientRect();
+        updateHandleFromCoords(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    arcColorGrid.addEventListener('pointerdown', (e) => {
+        isDraggingGrid = true;
+        arcColorGrid.setPointerCapture(e.pointerId);
+        handlePointer(e);
+    });
+
+    arcColorGrid.addEventListener('pointermove', (e) => {
+        if (isDraggingGrid) {
+            handlePointer(e);
+        }
+    });
+
+    arcColorGrid.addEventListener('pointerup', (e) => {
+        isDraggingGrid = false;
+        try { arcColorGrid.releasePointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    arcColorGrid.addEventListener('pointercancel', () => {
+        isDraggingGrid = false;
+    });
+}
+
+if (presetPills) {
+    presetPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const h = parseInt(pill.dataset.h, 10);
+            const s = parseInt(pill.dataset.s, 10);
+            const l = parseInt(pill.dataset.l, 10);
+            applyTheme(h, s, l, true);
+            setHandleFromHsl(h, s, l);
+            if (themeColorName) themeColorName.textContent = pill.textContent.trim();
+        });
+    });
+}
+
+if (resetThemeBtn) {
+    resetThemeBtn.addEventListener('click', () => {
+        applyTheme(267, 83, 60, true);
+        setHandleFromHsl(267, 83, 60);
+        if (themeColorName) themeColorName.textContent = 'Catppuccin Mauve';
+    });
+}
+
+// Load saved theme on startup
+chrome.storage.local.get(['customTheme'], (res) => {
+    if (res.customTheme) {
+        applyTheme(res.customTheme.h, res.customTheme.s, res.customTheme.l, false);
+    }
 });
 
 // ============================================================================
-// Daily Analytics & Streaks UI
+// 3. Daily Analytics & Streaks UI
 // ============================================================================
 const streakCount = document.getElementById('streakCount');
 const todayFocusTime = document.getElementById('todayFocusTime');
@@ -51,7 +265,110 @@ chrome.runtime.sendMessage({ type: 'GET_ANALYTICS' }, (res) => {
 });
 
 // ============================================================================
-// Pomodoro Timer Logic
+// 4. Music & Media Player (Fixed & Unified)
+// ============================================================================
+const playPauseBtn = document.getElementById('playPause');
+const nextBtn = document.getElementById('next');
+const prevBtn = document.getElementById('prev');
+const playPauseIcon = document.getElementById('playPauseIcon');
+const trackTitle = document.getElementById('trackTitle');
+const trackArtist = document.getElementById('trackArtist');
+const vinylDisc = document.getElementById('vinylDisc');
+const soundscapeSelect = document.getElementById('soundscapeSelect');
+const soundscapeVolume = document.getElementById('soundscapeVolume');
+const volumePercent = document.getElementById('volumePercent');
+
+let isMusicPlaying = false;
+let currentSoundscape = 'lofi';
+let currentVolume = 0.5;
+
+function setMediaPlayingUI(playing, title, artist) {
+    isMusicPlaying = playing;
+    if (playPauseIcon) {
+        playPauseIcon.innerHTML = playing ? getLucideSvg('pause', 22) : getLucideSvg('play', 22);
+    }
+    if (vinylDisc) {
+        if (playing) vinylDisc.classList.add('playing');
+        else vinylDisc.classList.remove('playing');
+    }
+    if (title && trackTitle) trackTitle.textContent = title;
+    if (artist && trackArtist) trackArtist.textContent = artist;
+}
+
+function updateMediaUI() {
+    chrome.runtime.sendMessage({ type: 'GET_MEDIA_INFO' }, (info) => {
+        if (!info) return;
+        setMediaPlayingUI(info.isPlaying, info.title, info.artist);
+        if (info.soundscape && soundscapeSelect) {
+            soundscapeSelect.value = info.soundscape;
+            currentSoundscape = info.soundscape;
+        }
+    });
+}
+updateMediaUI();
+setInterval(updateMediaUI, 2500);
+
+if (playPauseBtn) {
+    playPauseBtn.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'playpause' });
+        // Immediate optimistic UI response
+        setMediaPlayingUI(!isMusicPlaying);
+    });
+}
+
+if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'next' });
+    });
+}
+
+if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'prev' });
+    });
+}
+
+if (soundscapeSelect) {
+    soundscapeSelect.addEventListener('change', (e) => {
+        currentSoundscape = e.target.value;
+        chrome.storage.local.set({ currentSoundscape });
+        chrome.runtime.sendMessage({
+            type: 'PLAY_SOUNDSCAPE',
+            soundscape: currentSoundscape,
+            volume: currentVolume
+        });
+        setMediaPlayingUI(true);
+    });
+}
+
+if (soundscapeVolume) {
+    soundscapeVolume.addEventListener('input', (e) => {
+        currentVolume = parseInt(e.target.value, 10) / 100;
+        if (volumePercent) volumePercent.textContent = `${e.target.value}%`;
+        chrome.runtime.sendMessage({
+            type: 'SET_AMBIENT_VOLUME',
+            volume: currentVolume
+        });
+        chrome.storage.local.set({ ambientVolume: currentVolume });
+    });
+}
+
+chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume'], (res) => {
+    if (res.ambientPlaying !== undefined) isMusicPlaying = res.ambientPlaying;
+    if (res.currentSoundscape) {
+        currentSoundscape = res.currentSoundscape;
+        if (soundscapeSelect) soundscapeSelect.value = currentSoundscape;
+    }
+    if (res.ambientVolume !== undefined) {
+        currentVolume = res.ambientVolume;
+        if (soundscapeVolume) soundscapeVolume.value = Math.round(currentVolume * 100);
+        if (volumePercent) volumePercent.textContent = `${Math.round(currentVolume * 100)}%`;
+    }
+    setMediaPlayingUI(isMusicPlaying);
+});
+
+// ============================================================================
+// 5. Pomodoro Timer Logic
 // ============================================================================
 let timeLeft = 25 * 60;
 let currentMode = 'focus';
@@ -65,10 +382,12 @@ const restartBtn = document.getElementById('restartTimer');
 const completedDisplay = document.getElementById('completedSessions');
 const sessionTargetInput = document.getElementById('sessionTarget');
 
-function updateDisplay() {
+function updateTimerDisplay() {
     const mins = Math.floor(timeLeft / 60);
     const secs = timeLeft % 60;
-    timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    if (timerDisplay) {
+        timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
 }
 
 function applyModeAndRunning(mode, isRunning) {
@@ -77,26 +396,25 @@ function applyModeAndRunning(mode, isRunning) {
 
     if (currentMode === 'break') {
         document.body.classList.add('break-mode');
-        startBtn.textContent = currentIsRunning ? 'Pause Break' : 'Resume Break';
-        startBtn.style.background = currentIsRunning ? 'var(--ctp-red)' : 'var(--ctp-teal)';
+        if (startBtn) {
+            startBtn.textContent = currentIsRunning ? 'Pause Break' : 'Resume Break';
+            startBtn.style.background = currentIsRunning ? 'var(--ctp-red)' : 'var(--ctp-teal)';
+        }
     } else {
         document.body.classList.remove('break-mode');
-        startBtn.textContent = currentIsRunning ? 'Pause Session' : 'Start Focus';
-        startBtn.style.background = currentIsRunning ? 'var(--ctp-red)' : 'var(--ctp-green)';
+        if (startBtn) {
+            startBtn.textContent = currentIsRunning ? 'Pause Session' : 'Start Focus';
+            startBtn.style.background = currentIsRunning ? 'var(--ctp-red)' : 'var(--accent)';
+        }
     }
 }
 
-function syncTimeWithBackground() {
-    chrome.runtime.sendMessage({ type: 'SET_TIME', time: timeLeft });
-}
-
-// Fetch initial status from background service worker
 chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
     if (response) {
         timeLeft = response.timeLeft;
-        updateDisplay();
+        updateTimerDisplay();
         applyModeAndRunning(response.mode, response.isRunning);
-        if (response.completedSessions !== undefined) {
+        if (response.completedSessions !== undefined && completedDisplay) {
             completedDisplay.textContent = response.completedSessions;
         }
         if (response.sessionTarget !== undefined && sessionTargetInput) {
@@ -105,35 +423,43 @@ chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
     }
 });
 
-startBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
-        if (response && response.isRunning) {
-            chrome.runtime.sendMessage({ type: 'STOP_TIMER' });
-        } else {
-            chrome.runtime.sendMessage({ type: 'START_TIMER' });
+if (startBtn) {
+    startBtn.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
+            if (response && response.isRunning) {
+                chrome.runtime.sendMessage({ type: 'STOP_TIMER' });
+            } else {
+                chrome.runtime.sendMessage({ type: 'START_TIMER' });
+            }
+        });
+    });
+}
+
+if (incBtn) {
+    incBtn.addEventListener('click', () => {
+        if (!currentIsRunning && currentMode === 'focus') {
+            timeLeft += 60;
+            updateTimerDisplay();
+            chrome.runtime.sendMessage({ type: 'SET_TIME', time: timeLeft });
         }
     });
-});
+}
 
-incBtn.addEventListener('click', () => {
-    if (!currentIsRunning && currentMode === 'focus') {
-        timeLeft += 60;
-        updateDisplay();
-        syncTimeWithBackground();
-    }
-});
+if (decBtn) {
+    decBtn.addEventListener('click', () => {
+        if (!currentIsRunning && currentMode === 'focus' && timeLeft >= 120) {
+            timeLeft -= 60;
+            updateTimerDisplay();
+            chrome.runtime.sendMessage({ type: 'SET_TIME', time: timeLeft });
+        }
+    });
+}
 
-decBtn.addEventListener('click', () => {
-    if (!currentIsRunning && currentMode === 'focus' && timeLeft >= 120) {
-        timeLeft -= 60;
-        updateDisplay();
-        syncTimeWithBackground();
-    }
-});
-
-restartBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'RESET_TIMER' });
-});
+if (restartBtn) {
+    restartBtn.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ type: 'RESET_TIMER' });
+    });
+}
 
 if (sessionTargetInput) {
     sessionTargetInput.addEventListener('change', () => {
@@ -144,166 +470,68 @@ if (sessionTargetInput) {
     });
 }
 
-// Break / Work & Tick Listener
+// Runtime Listener
 chrome.runtime.onMessage.addListener((message) => {
     if (message.type === 'TICK' || message.type === 'TIMER_FINISHED' || message.type === 'TIMER_RESET') {
         if (message.timeLeft !== undefined) {
             timeLeft = message.timeLeft;
-            updateDisplay();
+            updateTimerDisplay();
         }
         if (message.mode !== undefined || message.isRunning !== undefined) {
             applyModeAndRunning(message.mode, message.isRunning);
         }
-        if (message.completedSessions !== undefined) {
+        if (message.completedSessions !== undefined && completedDisplay) {
             completedDisplay.textContent = message.completedSessions;
-        }
-        if (message.sessionTarget !== undefined && sessionTargetInput) {
-            sessionTargetInput.value = message.sessionTarget;
         }
     } else if (message.type === 'ANALYTICS_UPDATE') {
         updateAnalyticsUI(message.analytics);
     } else if (message.type === 'AMBIENT_STATE_CHANGED') {
-        isAmbientPlaying = message.isPlaying;
-        if (message.soundscape) currentSoundscape = message.soundscape;
-        if (message.volume !== undefined) currentAmbientVolume = message.volume;
-        updateSoundscapeUI();
-    }
-});
-
-// ============================================================================
-// Media Player Logic
-// ============================================================================
-const playPauseBtn = document.getElementById('playPause');
-const nextBtn = document.getElementById('next');
-const prevBtn = document.getElementById('prev');
-
-playPauseBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'playpause' });
-});
-
-nextBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'next' });
-});
-
-prevBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'prev' });
-});
-
-const trackTitle = document.getElementById('trackTitle');
-const trackArtist = document.getElementById('trackArtist');
-const mediaThumb = document.getElementById('mediaThumb');
-
-function updateMediaUI() {
-    chrome.runtime.sendMessage({ type: 'GET_MEDIA_INFO' }, (info) => {
-        if (!info) return;
-        trackTitle.textContent = info.title || 'No Media Detected';
-        trackArtist.textContent = info.artist || 'Start playing music...';
-
-        if (info.art) {
-            mediaThumb.innerHTML = `<img src="${info.art}" alt="Album Art">`;
-        } else {
-            mediaThumb.innerHTML = `<span>🎵</span>`;
+        setMediaPlayingUI(message.isPlaying);
+        if (message.soundscape && soundscapeSelect) {
+            soundscapeSelect.value = message.soundscape;
+            currentSoundscape = message.soundscape;
         }
-    });
-}
-updateMediaUI();
-setInterval(updateMediaUI, 2000);
-
-// ============================================================================
-// Ambient Soundscapes & Volume Controller
-// ============================================================================
-const soundscapeSelect = document.getElementById('soundscapeSelect');
-const soundscapeToggle = document.getElementById('soundscapeToggle');
-const soundscapeVolume = document.getElementById('soundscapeVolume');
-const volumePercent = document.getElementById('volumePercent');
-
-let isAmbientPlaying = false;
-let currentSoundscape = 'lofi';
-let currentAmbientVolume = 0.5;
-
-function updateSoundscapeUI() {
-    if (soundscapeToggle) {
-        soundscapeToggle.textContent = isAmbientPlaying ? '⏸ Pause' : '▶ Play';
-        soundscapeToggle.classList.toggle('playing', isAmbientPlaying);
+        if (message.volume !== undefined && soundscapeVolume) {
+            soundscapeVolume.value = Math.round(message.volume * 100);
+            if (volumePercent) volumePercent.textContent = `${Math.round(message.volume * 100)}%`;
+        }
     }
-    if (soundscapeSelect) {
-        soundscapeSelect.value = currentSoundscape;
-    }
-    if (soundscapeVolume) {
-        soundscapeVolume.value = Math.round(currentAmbientVolume * 100);
-    }
-    if (volumePercent) {
-        volumePercent.textContent = `${Math.round(currentAmbientVolume * 100)}%`;
-    }
-}
-
-chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume'], (res) => {
-    isAmbientPlaying = !!res.ambientPlaying;
-    currentSoundscape = res.currentSoundscape || 'lofi';
-    currentAmbientVolume = res.ambientVolume !== undefined ? res.ambientVolume : 0.5;
-    updateSoundscapeUI();
 });
 
-if (soundscapeToggle) {
-    soundscapeToggle.addEventListener('click', () => {
-        isAmbientPlaying = !isAmbientPlaying;
-        if (isAmbientPlaying) {
-            chrome.runtime.sendMessage({
-                type: 'PLAY_SOUNDSCAPE',
-                soundscape: currentSoundscape,
-                volume: currentAmbientVolume
-            });
-        } else {
-            chrome.runtime.sendMessage({ type: 'PAUSE_SOUNDSCAPE' });
-        }
-        chrome.storage.local.set({ ambientPlaying: isAmbientPlaying });
-        updateSoundscapeUI();
-    });
-}
+// ============================================================================
+// 6. Focus Rules & Settings
+// ============================================================================
+const settingsBtn = document.getElementById('toggleSettings');
+const settingsMenu = document.getElementById('settingsMenu');
+const toggleSettingsLabel = document.getElementById('toggleSettingsLabel');
 
-if (soundscapeSelect) {
-    soundscapeSelect.addEventListener('change', (e) => {
-        currentSoundscape = e.target.value;
-        chrome.storage.local.set({ currentSoundscape });
-        if (isAmbientPlaying) {
-            chrome.runtime.sendMessage({
-                type: 'PLAY_SOUNDSCAPE',
-                soundscape: currentSoundscape,
-                volume: currentAmbientVolume
-            });
+if (settingsBtn && settingsMenu) {
+    settingsBtn.addEventListener('click', () => {
+        const isActive = settingsMenu.classList.toggle('active');
+        if (toggleSettingsLabel) {
+            toggleSettingsLabel.textContent = isActive ? 'Close Rules' : 'Focus Rules';
+        }
+        const iconSpan = document.getElementById('rulesSettingsIcon');
+        if (iconSpan) {
+            iconSpan.innerHTML = isActive ? getLucideSvg('x', 16) : getLucideSvg('sliders', 16);
         }
     });
 }
 
-if (soundscapeVolume) {
-    soundscapeVolume.addEventListener('input', (e) => {
-        currentAmbientVolume = parseInt(e.target.value, 10) / 100;
-        if (volumePercent) volumePercent.textContent = `${e.target.value}%`;
-        chrome.runtime.sendMessage({
-            type: 'SET_AMBIENT_VOLUME',
-            volume: currentAmbientVolume
-        });
-        chrome.storage.local.set({ ambientVolume: currentAmbientVolume });
-    });
-}
-
-// ============================================================================
-// Focus Rules Settings & Toggles
-// ============================================================================
 const blockAllToggle = document.getElementById('blockAll');
 const blockedSitesArea = document.getElementById('blockedSites');
 
 function saveBlockSettings() {
-    const sites = blockedSitesArea.value.split('\n');
+    const sites = (blockedSitesArea?.value || '').split('\n');
     chrome.runtime.sendMessage({
         type: 'UPDATE_BLOCK_SETTINGS',
-        blockAll: blockAllToggle.checked,
+        blockAll: !!blockAllToggle?.checked,
         blockedSites: sites
     });
 
     chrome.storage.local.set({
-        blockAll: blockAllToggle.checked,
-        blockedSites: blockedSitesArea.value
+        blockAll: !!blockAllToggle?.checked,
+        blockedSites: blockedSitesArea?.value || ''
     });
 }
 
@@ -315,7 +543,6 @@ chrome.storage.local.get(['blockAll', 'blockedSites'], (res) => {
     if (res.blockedSites !== undefined && blockedSitesArea) blockedSitesArea.value = res.blockedSites;
 });
 
-// Clean Article Reader Toggle
 const removeJSToggle = document.getElementById('removeJS');
 if (removeJSToggle) {
     removeJSToggle.addEventListener('change', async (e) => {
@@ -328,9 +555,7 @@ if (removeJSToggle) {
                     state: e.target.checked
                 }).catch(() => {});
             }
-        } catch (err) {
-            console.error('Cleanse trigger error:', err);
-        }
+        } catch (err) {}
     });
 
     chrome.storage.local.get(['cleanseActive'], (res) => {
@@ -338,7 +563,6 @@ if (removeJSToggle) {
     });
 }
 
-// Doomscroll Nudge Toggle
 const doomscrollToggle = document.getElementById('doomscrollToggle');
 if (doomscrollToggle) {
     chrome.storage.local.get(['doomscrollEnabled'], (res) => {
@@ -349,7 +573,6 @@ if (doomscrollToggle) {
     });
 }
 
-// Shorts Daily Allowance Setting
 const shortsAllowance = document.getElementById('shortsAllowance');
 if (shortsAllowance) {
     chrome.storage.local.get(['shortsBudgetMinutes'], (res) => {
@@ -363,7 +586,6 @@ if (shortsAllowance) {
     });
 }
 
-// Timer Completion Chime Toggle
 const timerChimeToggle = document.getElementById('timerChimeToggle');
 if (timerChimeToggle) {
     chrome.storage.local.get(['timerChimeEnabled'], (res) => {
@@ -375,7 +597,7 @@ if (timerChimeToggle) {
 }
 
 // ============================================================================
-// Focus Tasks & Goal Logic
+// 7. Focus Tasks & Goals Logic
 // ============================================================================
 let tasks = [];
 let activeTaskId = null;
@@ -387,7 +609,6 @@ const todoList = document.getElementById('todoList');
 const todoBadge = document.getElementById('todoBadge');
 const clearCompletedBtn = document.getElementById('clearCompletedBtn');
 const filterBtns = document.querySelectorAll('.filter-btn');
-
 const activeFocusContainer = document.getElementById('activeFocusContainer');
 const activeFocusText = document.getElementById('activeFocusText');
 const quickCompleteTaskBtn = document.getElementById('quickCompleteTaskBtn');
@@ -427,13 +648,11 @@ function renderActiveFocus() {
     }
 
     if (activeTask) {
-        activeFocusText.textContent = activeTask.text;
-        activeFocusText.title = activeTask.text;
+        if (activeFocusText) activeFocusText.textContent = activeTask.text;
         if (activeFocusContainer) activeFocusContainer.classList.add('has-focus');
-        if (quickCompleteTaskBtn) quickCompleteTaskBtn.style.display = 'inline-block';
+        if (quickCompleteTaskBtn) quickCompleteTaskBtn.style.display = 'inline-flex';
     } else {
-        activeFocusText.textContent = tasks.length === 0 ? 'Add a task below to focus' : 'All tasks completed! 🎉';
-        activeFocusText.title = '';
+        if (activeFocusText) activeFocusText.textContent = tasks.length === 0 ? 'Add a task below to focus' : 'All tasks completed! 🎉';
         if (activeFocusContainer) activeFocusContainer.classList.remove('has-focus');
         if (quickCompleteTaskBtn) quickCompleteTaskBtn.style.display = 'none';
     }
@@ -444,8 +663,7 @@ function renderTasks() {
     todoList.innerHTML = '';
 
     const completedCount = tasks.filter(t => t.completed).length;
-    const totalCount = tasks.length;
-    if (todoBadge) todoBadge.textContent = `${completedCount}/${totalCount}`;
+    if (todoBadge) todoBadge.textContent = `${completedCount}/${tasks.length}`;
 
     let filtered = tasks;
     if (currentFilter === 'active') {
@@ -473,12 +691,12 @@ function renderTasks() {
         const isActive = (task.id === activeTaskId && !task.completed);
         li.className = `todo-item ${task.completed ? 'completed' : ''} ${isActive ? 'active-focus' : ''}`;
 
-        // Pin / Star button
+        // Pin button with Lucide star icon
         const pinBtn = document.createElement('button');
         pinBtn.type = 'button';
         pinBtn.className = `todo-pin-btn ${task.isPinned && !task.completed ? 'pinned' : ''}`;
         pinBtn.title = task.isPinned ? 'Unpin focus goal' : 'Set as current focus goal';
-        pinBtn.textContent = (task.isPinned && !task.completed) ? '★' : '☆';
+        pinBtn.innerHTML = getLucideSvg('star', 15);
         pinBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             togglePinTask(task.id);
@@ -493,17 +711,17 @@ function renderTasks() {
             toggleTask(task.id);
         });
 
-        // Task text
+        // Text
         const textSpan = document.createElement('span');
         textSpan.className = 'todo-text';
         textSpan.textContent = task.text;
 
-        // Delete button
+        // Delete button with Lucide trash-2 icon
         const delBtn = document.createElement('button');
         delBtn.type = 'button';
         delBtn.className = 'todo-delete-btn';
         delBtn.title = 'Delete task';
-        delBtn.innerHTML = '&times;';
+        delBtn.innerHTML = getLucideSvg('trash-2', 15);
         delBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             deleteTask(task.id);
@@ -545,9 +763,7 @@ function toggleTask(id) {
     task.completed = !task.completed;
     if (task.completed) {
         task.isPinned = false;
-        if (activeTaskId === id) {
-            activeTaskId = null;
-        }
+        if (activeTaskId === id) activeTaskId = null;
     }
     saveTasks();
 }
@@ -569,9 +785,7 @@ function togglePinTask(id) {
 
 function deleteTask(id) {
     tasks = tasks.filter(t => t.id !== id);
-    if (activeTaskId === id) {
-        activeTaskId = null;
-    }
+    if (activeTaskId === id) activeTaskId = null;
     saveTasks();
 }
 
@@ -607,16 +821,12 @@ if (filterBtns) {
 if (quickCompleteTaskBtn) {
     quickCompleteTaskBtn.addEventListener('click', () => {
         const activeTask = getActiveTask();
-        if (activeTask) {
-            toggleTask(activeTask.id);
-        }
+        if (activeTask) toggleTask(activeTask.id);
     });
 }
 
-// Initial load
 loadTasks();
 
-// Listen for storage updates in case tasks are updated from other contexts
 chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && (changes.tasks || changes.activeTaskId)) {
         if (changes.tasks) tasks = changes.tasks.newValue || [];

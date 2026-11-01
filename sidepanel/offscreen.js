@@ -1,4 +1,4 @@
-// Focus Command Center — Ambient Audio & Chime Engine
+// Focus Command Center — Bulletproof Ambient Audio & Lofi Engine
 // Runs inside the Chrome MV3 Offscreen Document
 
 const lofiAudio = document.getElementById('lofiPlayer');
@@ -8,8 +8,8 @@ let currentSourceNode = null;
 let currentSoundscape = 'lofi';
 let isPlaying = false;
 let currentVolume = 0.5;
+let lofiChordInterval = null;
 
-// Lazy initialize AudioContext on user action
 function getAudioContext() {
     if (!audioCtx) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -24,7 +24,7 @@ function getAudioContext() {
     return audioCtx;
 }
 
-// Generate 5-second buffer of pink/brown noise for procedural soundscapes
+// Generate pink or brown noise buffer for soundscapes
 function createNoiseBuffer(type = 'pink') {
     const ctx = getAudioContext();
     const bufferSize = ctx.sampleRate * 5;
@@ -36,10 +36,9 @@ function createNoiseBuffer(type = 'pink') {
         for (let i = 0; i < bufferSize; i++) {
             const white = Math.random() * 2 - 1;
             lastOut = (lastOut + (0.02 * white)) / 1.02;
-            data[i] = lastOut * 3.5; // Gain compensation
+            data[i] = lastOut * 3.5;
         }
     } else {
-        // Pink noise (Paul Kellet's filter method)
         let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
         for (let i = 0; i < bufferSize; i++) {
             const white = Math.random() * 2 - 1;
@@ -56,8 +55,11 @@ function createNoiseBuffer(type = 'pink') {
     return buffer;
 }
 
-// Stop any currently running procedural Web Audio nodes
 function stopProcedural() {
+    if (lofiChordInterval) {
+        clearInterval(lofiChordInterval);
+        lofiChordInterval = null;
+    }
     if (currentSourceNode) {
         try {
             if (currentSourceNode.stop) currentSourceNode.stop();
@@ -67,13 +69,101 @@ function stopProcedural() {
     }
 }
 
-// Start procedural soundscape
+// Procedural Lo-Fi Electric Piano Chords (Jazzy 7th chords + vinyl texture)
+// Runs 100% offline, zero bandwidth, sounds soothing and never drops out!
+function playProceduralLofiSynth() {
+    const ctx = getAudioContext();
+    stopProcedural();
+
+    // Subtle vinyl crackle/surface noise in background
+    const vinylBuffer = ctx.createBuffer(1, ctx.sampleRate * 3, ctx.sampleRate);
+    const vinylData = vinylBuffer.getChannelData(0);
+    for (let i = 0; i < vinylData.length; i++) {
+        if (Math.random() < 0.0008) {
+            vinylData[i] = (Math.random() * 2 - 1) * 0.15;
+        } else {
+            vinylData[i] = (Math.random() * 2 - 1) * 0.005;
+        }
+    }
+    const vinylSource = ctx.createBufferSource();
+    vinylSource.buffer = vinylBuffer;
+    vinylSource.loop = true;
+    const vinylFilter = ctx.createBiquadFilter();
+    vinylFilter.type = 'lowpass';
+    vinylFilter.frequency.setValueAtTime(1400, ctx.currentTime);
+    const vinylGain = ctx.createGain();
+    vinylGain.gain.setValueAtTime(0.08, ctx.currentTime);
+    vinylSource.connect(vinylFilter);
+    vinylFilter.connect(vinylGain);
+    vinylGain.connect(masterGain);
+    vinylSource.start();
+
+    // Jazz Lo-Fi Chord Progressions (in Hz)
+    const progressions = [
+        [261.63, 329.63, 392.00, 493.88], // Cmaj7
+        [220.00, 261.63, 329.63, 392.00], // Am7
+        [293.66, 349.23, 440.00, 523.25], // Dm7
+        [196.00, 246.94, 293.66, 349.23], // G7
+        [174.61, 220.00, 261.63, 329.63]  // Fmaj7
+    ];
+
+    let chordIndex = 0;
+
+    function triggerChord() {
+        if (!isPlaying || currentSoundscape !== 'lofi') return;
+        const now = ctx.currentTime;
+        const freqs = progressions[chordIndex % progressions.length];
+        chordIndex++;
+
+        freqs.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const noteGain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+            // Slight detune for analog warmth
+            const detuneAmount = (Math.random() - 0.5) * 6;
+            osc.frequency.setValueAtTime(freq, now);
+            osc.detune.setValueAtTime(detuneAmount, now);
+
+            // Warm lowpass filter
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(550 + (i * 80), now);
+
+            // Envelope: soft attack, sustained bell decay
+            noteGain.gain.setValueAtTime(0.0001, now);
+            noteGain.gain.linearRampToValueAtTime(0.07, now + 0.35);
+            noteGain.gain.exponentialRampToValueAtTime(0.001, now + 3.8);
+
+            osc.connect(filter);
+            filter.connect(noteGain);
+            noteGain.connect(masterGain);
+
+            osc.start(now);
+            osc.stop(now + 3.9);
+        });
+    }
+
+    triggerChord();
+    lofiChordInterval = setInterval(triggerChord, 3600);
+
+    currentSourceNode = {
+        stop: () => {
+            if (lofiChordInterval) clearInterval(lofiChordInterval);
+            try { vinylSource.stop(); } catch(e) {}
+        },
+        disconnect: () => {
+            try { vinylSource.disconnect(); vinylGain.disconnect(); } catch(e) {}
+        }
+    };
+}
+
+// Procedural soundscapes
 function playProceduralSoundscape(name) {
     const ctx = getAudioContext();
     stopProcedural();
 
     if (name === 'rain') {
-        // Rain: Pink noise through bandpass + highpass with gentle drops
         const noiseSource = ctx.createBufferSource();
         noiseSource.buffer = createNoiseBuffer('pink');
         noiseSource.loop = true;
@@ -94,7 +184,6 @@ function playProceduralSoundscape(name) {
         currentSourceNode = noiseSource;
 
     } else if (name === 'noise') {
-        // Brown noise for deep focus & ADHD calming
         const noiseSource = ctx.createBufferSource();
         noiseSource.buffer = createNoiseBuffer('brown');
         noiseSource.loop = true;
@@ -110,7 +199,6 @@ function playProceduralSoundscape(name) {
         currentSourceNode = noiseSource;
 
     } else if (name === 'ocean') {
-        // Ocean: Brown/pink noise with oscillating swell (0.1 Hz LFO)
         const noiseSource = ctx.createBufferSource();
         noiseSource.buffer = createNoiseBuffer('brown');
         noiseSource.loop = true;
@@ -122,9 +210,8 @@ function playProceduralSoundscape(name) {
         const swellGain = ctx.createGain();
         swellGain.gain.setValueAtTime(0.25, ctx.currentTime);
 
-        // LFO for wave swells
         const lfo = ctx.createOscillator();
-        lfo.frequency.setValueAtTime(0.12, ctx.currentTime); // ~8.3 second wave cycle
+        lfo.frequency.setValueAtTime(0.12, ctx.currentTime);
 
         const lfoGain = ctx.createGain();
         lfoGain.gain.setValueAtTime(0.35, ctx.currentTime);
@@ -149,7 +236,6 @@ function playProceduralSoundscape(name) {
         };
 
     } else if (name === 'cafe') {
-        // Café: Warm pink noise with multi-frequency low buzz
         const noiseSource = ctx.createBufferSource();
         noiseSource.buffer = createNoiseBuffer('pink');
         noiseSource.loop = true;
@@ -159,7 +245,6 @@ function playProceduralSoundscape(name) {
         filter.frequency.setValueAtTime(750, ctx.currentTime);
         filter.Q.setValueAtTime(1.2, ctx.currentTime);
 
-        // Subtle warm hum (60Hz + 120Hz harmonics)
         const hum = ctx.createOscillator();
         hum.frequency.setValueAtTime(110, ctx.currentTime);
         const humGain = ctx.createGain();
@@ -181,6 +266,38 @@ function playProceduralSoundscape(name) {
                 try { noiseSource.disconnect(); hum.disconnect(); filter.disconnect(); } catch(e) {}
             }
         };
+
+    } else if (name === 'binaural') {
+        // 40Hz Gamma wave for peak focus (200Hz Left, 240Hz Right)
+        const leftOsc = ctx.createOscillator();
+        const rightOsc = ctx.createOscillator();
+        const merger = ctx.createChannelMerger(2);
+
+        leftOsc.type = 'sine';
+        leftOsc.frequency.setValueAtTime(200, ctx.currentTime);
+
+        rightOsc.type = 'sine';
+        rightOsc.frequency.setValueAtTime(240, ctx.currentTime);
+
+        const binGain = ctx.createGain();
+        binGain.gain.setValueAtTime(0.2, ctx.currentTime);
+
+        leftOsc.connect(merger, 0, 0);
+        rightOsc.connect(merger, 0, 1);
+        merger.connect(binGain);
+        binGain.connect(masterGain);
+
+        leftOsc.start();
+        rightOsc.start();
+
+        currentSourceNode = {
+            stop: () => {
+                try { leftOsc.stop(); rightOsc.stop(); } catch(e) {}
+            },
+            disconnect: () => {
+                try { leftOsc.disconnect(); rightOsc.disconnect(); merger.disconnect(); } catch(e) {}
+            }
+        };
     }
 }
 
@@ -188,12 +305,21 @@ function playProceduralSoundscape(name) {
 function startSoundscape(name) {
     currentSoundscape = name || currentSoundscape;
     isPlaying = true;
+    getAudioContext();
 
     if (currentSoundscape === 'lofi') {
         stopProcedural();
         if (lofiAudio) {
             lofiAudio.volume = currentVolume;
-            lofiAudio.play().catch(err => console.error('Lofi audio play error:', err));
+            const playPromise = lofiAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.warn('Lofi web stream unavailable, activating procedural chill synth fallback:', err);
+                    playProceduralLofiSynth();
+                });
+            }
+        } else {
+            playProceduralLofiSynth();
         }
     } else {
         if (lofiAudio) {
@@ -201,6 +327,8 @@ function startSoundscape(name) {
         }
         playProceduralSoundscape(currentSoundscape);
     }
+
+    broadcastAudioState();
 }
 
 function stopSoundscape() {
@@ -209,6 +337,7 @@ function stopSoundscape() {
         lofiAudio.pause();
     }
     stopProcedural();
+    broadcastAudioState();
 }
 
 function setMasterVolume(vol) {
@@ -221,13 +350,11 @@ function setMasterVolume(vol) {
     }
 }
 
-// Synthesize serene meditation chime / bowl for Pomodoro completion
 function playChime(mode = 'focus') {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
 
     if (mode === 'focus') {
-        // Tibetan Singing Bowl / Miracle 528Hz Focus Chime
         const fundamental = 528;
         const harmonics = [1, 2, 2.76, 5.4];
         const harmonicGains = [0.45, 0.22, 0.12, 0.04];
@@ -236,10 +363,9 @@ function playChime(mode = 'focus') {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
-            osc.type = index === 0 ? 'sine' : 'sine';
+            osc.type = 'sine';
             osc.frequency.setValueAtTime(fundamental * mult, now);
 
-            // Exponential decay over 3.2 seconds
             gain.gain.setValueAtTime(harmonicGains[index] * currentVolume, now);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
 
@@ -250,7 +376,6 @@ function playChime(mode = 'focus') {
             osc.stop(now + 3.3);
         });
     } else {
-        // Uplifting two-tone major third chime for Break Finished (D5 -> F#5)
         const notes = [
             { freq: 587.33, start: 0, dur: 1.5 },
             { freq: 739.99, start: 0.18, dur: 2.0 }
@@ -275,27 +400,47 @@ function playChime(mode = 'focus') {
     }
 }
 
+function broadcastAudioState() {
+    chrome.runtime.sendMessage({
+        type: 'AMBIENT_STATE_CHANGED',
+        isPlaying,
+        soundscape: currentSoundscape,
+        volume: currentVolume
+    }).catch(() => {});
+}
+
 // Runtime message dispatcher
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.target !== 'offscreen') return;
 
-    if (message.type === 'PLAY_SOUNDSCAPE') {
+    if (message.type === 'PING') {
+        sendResponse({ ready: true, isPlaying, soundscape: currentSoundscape });
+    } else if (message.type === 'PLAY_SOUNDSCAPE') {
         if (message.volume !== undefined) setMasterVolume(message.volume);
         startSoundscape(message.soundscape || currentSoundscape);
         sendResponse({ success: true, isPlaying: true, soundscape: currentSoundscape });
     } else if (message.type === 'PAUSE_SOUNDSCAPE') {
         stopSoundscape();
         sendResponse({ success: true, isPlaying: false });
+    } else if (message.type === 'TOGGLE_SOUNDSCAPE') {
+        if (isPlaying) {
+            stopSoundscape();
+        } else {
+            if (message.soundscape) currentSoundscape = message.soundscape;
+            if (message.volume !== undefined) setMasterVolume(message.volume);
+            startSoundscape(currentSoundscape);
+        }
+        sendResponse({ success: true, isPlaying, soundscape: currentSoundscape });
     } else if (message.type === 'SET_AMBIENT_VOLUME') {
         setMasterVolume(message.volume);
         sendResponse({ success: true, volume: currentVolume });
     } else if (message.type === 'PLAY_CHIME') {
         playChime(message.mode || 'focus');
         sendResponse({ success: true });
-    } else if (message.type === 'PLAY_LOFI') {
-        // Backward compatibility
-        startSoundscape('lofi');
-    } else if (message.type === 'PAUSE_LOFI') {
-        stopSoundscape();
+    } else if (message.type === 'GET_AUDIO_STATUS') {
+        sendResponse({ isPlaying, soundscape: currentSoundscape, volume: currentVolume });
     }
 });
+
+// Notify background that offscreen is loaded and ready
+chrome.runtime.sendMessage({ type: 'OFFSCREEN_LOADED' }).catch(() => {});

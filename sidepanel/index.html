@@ -3,68 +3,107 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Center</title>
     <link rel="stylesheet" href="style.css">
+    <script src="icons.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <header
-            style="display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 16px;">
-            <h1 style="margin: 0; font-size: 1.5rem; letter-spacing: -0.5px;">Focus Center</h1>
-            <button id="popOutBtn" title="Open in floating window"
-                style="position: absolute; right: 0; background: transparent; border: none; color: var(--ctp-subtext); cursor: pointer; font-size: 1.2rem; transition: color 0.2s;">
-                ⧉
-            </button>
-        </header>
+        <!-- Sleek, Modern Borderless Micro-Bar (Replaces clunky top bar) -->
+        <div class="top-micro-bar">
+            <div class="brand-tag">
+                <span class="brand-icon" id="brandIcon"></span>
+                <span class="brand-name">Focus Center</span>
+            </div>
+            <div class="top-actions">
+                <button id="openThemeBtn" class="btn-icon-subtle" title="Arc Theme Studio">
+                    <span id="themeBtnIcon"></span>
+                </button>
+                <button id="popOutBtn" class="btn-icon-subtle" title="Open in floating window">
+                    <span id="popOutBtnIcon"></span>
+                </button>
+            </div>
+        </div>
 
         <!-- Daily Focus Analytics & Streaks -->
         <section class="card analytics-card">
             <div class="analytics-grid">
                 <div class="stat-box">
-                    <span class="stat-icon">🔥</span>
+                    <span class="stat-icon" id="streakIcon"></span>
                     <div class="stat-value" id="streakCount">0</div>
                     <div class="stat-label">Day Streak</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-icon">⏱️</span>
+                    <span class="stat-icon" id="focusedIcon"></span>
                     <div class="stat-value" id="todayFocusTime">0m</div>
                     <div class="stat-label">Focused Today</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-icon">🛑</span>
+                    <span class="stat-icon" id="interceptedIcon"></span>
                     <div class="stat-value" id="todayIntercepted">0</div>
                     <div class="stat-label">Shorts Avoided</div>
                 </div>
             </div>
         </section>
 
+        <!-- Active Focus Music & Media Player -->
         <section class="card media-card">
             <div class="thumbnail-large" id="mediaThumb">
-                <span>🎵</span>
+                <div class="vinyl-disc" id="vinylDisc">
+                    <div class="vinyl-groove"></div>
+                    <div class="vinyl-center" id="vinylCenter">
+                        <span id="discCenterIcon"></span>
+                    </div>
+                </div>
             </div>
-            <div id="trackTitle">No Media Detected</div>
-            <div id="trackArtist">Start playing music...</div>
+            <div id="trackTitle" class="track-title">Lofi Focus Radio</div>
+            <div id="trackArtist" class="track-artist">Focus Command Center • 24/7 Deep Work</div>
 
-            <div class="controls" style="display: flex; gap: 20px;">
-                <button class="btn-circle" id="prev">⏮</button>
-                <button class="btn-circle btn-accent" id="playPause">⏯</button>
-                <button class="btn-circle" id="next">⏭</button>
+            <div class="controls" style="display: flex; gap: 20px; align-items: center; margin-bottom: 12px;">
+                <button class="btn-circle" id="prev" title="Previous Soundscape">
+                    <span id="prevIcon"></span>
+                </button>
+                <button class="btn-circle btn-accent btn-play-large" id="playPause" title="Play / Pause Music">
+                    <span id="playPauseIcon"></span>
+                </button>
+                <button class="btn-circle" id="next" title="Next Soundscape">
+                    <span id="nextIcon"></span>
+                </button>
+            </div>
+
+            <!-- Integrated Volume Slider in Media Player -->
+            <div class="player-volume-row">
+                <span id="volumeIcon" class="volume-speaker-icon"></span>
+                <input type="range" id="soundscapeVolume" min="0" max="100" value="50" class="volume-slider" title="Volume">
+                <span id="volumePercent" class="volume-percent">50%</span>
             </div>
         </section>
 
+        <!-- Pomodoro Timer Section -->
         <section class="card">
             <div class="active-focus-container" id="activeFocusContainer">
-                <div class="active-focus-label">🎯 Current Focus Goal</div>
+                <div class="active-focus-label">
+                    <span id="targetGoalIcon"></span>
+                    <span>Current Focus Goal</span>
+                </div>
                 <div class="active-focus-bar">
                     <span id="activeFocusText" class="active-focus-text">No active task set</span>
-                    <button id="quickCompleteTaskBtn" class="btn-micro" title="Mark focus task complete" style="display: none;">✓ Done</button>
+                    <button id="quickCompleteTaskBtn" class="btn-micro" title="Mark focus task complete" style="display: none;">
+                        <span id="checkDoneIcon"></span> Done
+                    </button>
                 </div>
             </div>
 
             <div class="timer-adjuster">
-                <button class="btn-circle" id="decTime">-</button>
+                <button class="btn-circle" id="decTime" title="Subtract 1 minute">
+                    <span id="minusIcon"></span>
+                </button>
                 <div id="timer">25:00</div>
-                <button class="btn-circle" id="incTime">+</button>
+                <button class="btn-circle" id="incTime" title="Add 1 minute">
+                    <span id="plusIcon"></span>
+                </button>
             </div>
 
             <div class="session-setting">
@@ -74,35 +113,38 @@
 
             <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                 <button id="startTimer" class="btn-primary" style="flex: 3;">Start Focus</button>
-                <button id="restartTimer" class="btn-circle" style="flex: 1; border-radius: 25px;">↺</button>
+                <button id="restartTimer" class="btn-circle" style="flex: 1; border-radius: 25px;" title="Reset Timer">
+                    <span id="resetIcon"></span>
+                </button>
             </div>
 
             <div class="session-counter">Completed: <span id="completedSessions">0</span></div>
 
-            <!-- Ambient Soundscapes Switcher -->
+            <!-- Soundscape Quick Selector -->
             <div class="ambient-container">
                 <div class="ambient-header">
-                    <span style="font-weight: 700; font-size: 0.8rem; color: var(--ctp-text);">🎧 Ambient Soundscapes</span>
-                    <button id="soundscapeToggle" class="btn-sound-toggle" title="Toggle audio">▶ Play</button>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span id="headphonesIcon"></span>
+                        <span style="font-weight: 700; font-size: 0.8rem; color: var(--ctp-text);">Focus Audio Station</span>
+                    </div>
                 </div>
                 <div class="ambient-controls">
                     <select id="soundscapeSelect" class="soundscape-select">
-                        <option value="lofi">🎵 Lofi Radio</option>
-                        <option value="rain">🌧️ Rain & Storm</option>
-                        <option value="noise">📻 Deep Brown Noise</option>
-                        <option value="ocean">🌊 Ocean Waves</option>
-                        <option value="cafe">☕ Cozy Café</option>
+                        <option value="lofi">Lofi Chill Radio</option>
+                        <option value="rain">Rain & Thunder Storm</option>
+                        <option value="noise">Deep Brown Noise</option>
+                        <option value="ocean">Ocean Waves</option>
+                        <option value="cafe">Cozy Café Ambience</option>
+                        <option value="binaural">40Hz Gamma Focus</option>
                     </select>
-                    <div class="volume-slider-box">
-                        <span style="font-size: 0.85rem;" title="Volume">🔉</span>
-                        <input type="range" id="soundscapeVolume" min="0" max="100" value="50" class="volume-slider">
-                        <span id="volumePercent" class="volume-percent">50%</span>
-                    </div>
                 </div>
             </div>
 
             <div class="settings-toggle">
-                <button id="toggleSettings">Focus Rules ⚙️</button>
+                <button id="toggleSettings">
+                    <span id="rulesSettingsIcon"></span>
+                    <span id="toggleSettingsLabel">Focus Rules</span>
+                </button>
                 <div id="settingsMenu" class="settings-content">
                     <div class="option-row">
                         <div>
@@ -153,17 +195,18 @@
                     <div class="shortcuts-guide">
                         <div class="shortcuts-title">⚡ Global Keyboard Shortcuts</div>
                         <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> <span>Start/Pause Timer</span></div>
-                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> <span>Toggle Ambient Audio</span></div>
+                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> <span>Toggle Focus Music</span></div>
                         <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> <span>Clean Article Reader</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Focus Tasks & To-Do List -->
         <section class="card todo-card">
             <div class="todo-header">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.1rem;">📝</span>
+                    <span id="tasksHeaderIcon"></span>
                     <h2 style="margin: 0; font-size: 1rem; color: var(--ctp-text); font-weight: 700;">Focus Tasks</h2>
                     <span id="todoBadge" class="todo-badge">0/0</span>
                 </div>
@@ -172,7 +215,9 @@
 
             <form id="todoForm" class="todo-input-row">
                 <input type="text" id="todoInput" placeholder="Add a focus task... (Press Enter)" maxlength="140" autocomplete="off">
-                <button type="submit" id="addTodoBtn" class="btn-add" title="Add Task">+</button>
+                <button type="submit" id="addTodoBtn" class="btn-add" title="Add Task">
+                    <span id="addTaskIcon"></span>
+                </button>
             </form>
 
             <div class="todo-filters">
@@ -185,6 +230,66 @@
                 <!-- Tasks will be rendered here dynamically -->
             </ul>
         </section>
+
+        <!-- Arc-Style Theme Customization Centre Modal -->
+        <div id="themeModal" class="theme-modal-backdrop" style="display: none;">
+            <div class="theme-modal">
+                <div class="theme-modal-header">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="theme-header-icon" id="themeModalHeaderIcon"></span>
+                        <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--ctp-text);">Arc Theme Studio</h3>
+                    </div>
+                    <button id="closeThemeBtn" class="btn-icon-subtle" title="Close Theme Studio">
+                        <span id="closeThemeIcon"></span>
+                    </button>
+                </div>
+
+                <p class="theme-subtitle">Drag your mouse across the 2D grid to sculpt your custom chromatic palette</p>
+
+                <!-- 2D Arc Chromatic Grid -->
+                <div class="arc-picker-wrapper">
+                    <div id="arcColorGrid" class="arc-color-grid">
+                        <div id="arcPickerHandle" class="arc-picker-handle"></div>
+                    </div>
+                </div>
+
+                <!-- Theme Color Preview & Readout -->
+                <div class="theme-preview-row">
+                    <div class="theme-preview-chip" id="themePreviewChip"></div>
+                    <div class="theme-preview-info">
+                        <span id="themeColorName" class="theme-color-name">Custom Palette</span>
+                        <span id="themeHslValue" class="theme-hsl-value">HSL: 265°, 85%, 65%</span>
+                    </div>
+                    <button id="resetThemeBtn" class="btn-text-sm" title="Reset to Catppuccin Mocha">Reset</button>
+                </div>
+
+                <!-- Arc Preset Palettes -->
+                <div class="arc-presets-title">Curated Arc Palettes</div>
+                <div class="arc-presets-grid">
+                    <button type="button" class="preset-pill" data-h="267" data-s="83" data-l="60" style="--p-color: #a855f7;">
+                        <span class="preset-dot"></span>Electric Lilac
+                    </button>
+                    <button type="button" class="preset-pill" data-h="15" data-s="88" data-l="60" style="--p-color: #f97316;">
+                        <span class="preset-dot"></span>Arc Sunset
+                    </button>
+                    <button type="button" class="preset-pill" data-h="190" data-s="88" data-l="52" style="--p-color: #06b6d4;">
+                        <span class="preset-dot"></span>Oceanic Cyan
+                    </button>
+                    <button type="button" class="preset-pill" data-h="152" data-s="75" data-l="54" style="--p-color: #10b981;">
+                        <span class="preset-dot"></span>Emerald Zen
+                    </button>
+                    <button type="button" class="preset-pill" data-h="335" data-s="88" data-l="62" style="--p-color: #ec4899;">
+                        <span class="preset-dot"></span>Cyber Rose
+                    </button>
+                    <button type="button" class="preset-pill" data-h="38" data-s="85" data-l="58" style="--p-color: #eab308;">
+                        <span class="preset-dot"></span>Warm Amber
+                    </button>
+                    <button type="button" class="preset-pill" data-h="220" data-s="15" data-l="40" style="--p-color: #64748b;">
+                        <span class="preset-dot"></span>Slate Stealth
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>

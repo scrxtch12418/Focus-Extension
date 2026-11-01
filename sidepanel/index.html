@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <!-- Pixel Art Clouds & Mountain Background (Inspired by Janhvi's Portfolio) -->
+    <!-- Retro Pixel Art Clouds & Mountain Background -->
     <div class="retro-backdrop">
         <svg class="pixel-cloud pixel-cloud-1" viewBox="0 0 140 60">
             <path d="M30 40 H10 V30 H0 V20 H20 V10 H50 V0 H80 V10 H110 V20 H140 V30 H130 V40 H120 V50 H40 V40 Z" />
@@ -30,7 +30,7 @@
         <header class="retro-window-header">
             <div class="window-title-left">
                 <span class="window-sparkle-icon" id="brandIcon"></span>
-                <span>FOCUS_COMMAND_CENTER.EXE</span>
+                <span>FOCUS_DESKTOP.EXE</span>
             </div>
             <div class="window-actions-right">
                 <button id="openThemeBtn" class="retro-btn-header" title="Select System Theme">
@@ -42,14 +42,24 @@
             </div>
         </header>
 
-        <!-- Edge-to-Edge Responsive Cards Grid -->
+        <!-- Decluttering Area Switcher (Focus on One Card Area with Ample Breathing Space) -->
+        <nav class="retro-nav-bar" id="retroNavBar">
+            <button class="retro-nav-tab active" data-area="all">★ ALL APPS</button>
+            <button class="retro-nav-tab" data-area="focus">⏱ FOCUS</button>
+            <button class="retro-nav-tab" data-area="media">🎵 MEDIA</button>
+            <button class="retro-nav-tab" data-area="tasks">📝 TASKS</button>
+            <button class="retro-nav-tab" data-area="stats">📊 STATS</button>
+            <button class="retro-nav-tab" data-area="rules">⚙ RULES</button>
+        </nav>
+
+        <!-- Edge-to-Edge Clean Cards Grid -->
         <main class="retro-grid">
-            <!-- 1. Daily Analytics & Focus Streaks -->
-            <section class="retro-card span-2 analytics-card">
+            <!-- 1. Dedicated YouTube & Spotify Player (with Live Thumbnail & Video Scrub Slider) -->
+            <section class="retro-card" id="mediaCard" data-card-area="media">
                 <div class="card-retro-header">
                     <div class="card-title-left">
-                        <span id="analyticsHeaderIcon"></span>
-                        <span>DAILY_METRICS</span>
+                        <span id="spotifyHeaderIcon"></span>
+                        <span>Now Playing (YT / Spotify)</span>
                     </div>
                     <div class="retro-dots">
                         <span class="retro-dot"></span>
@@ -57,39 +67,47 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="analytics-grid">
-                        <div class="stat-box">
-                            <span class="stat-icon" id="streakIcon"></span>
-                            <div class="stat-value" id="streakCount">0</div>
-                            <div class="stat-label">Day Streak</div>
+                    <div class="media-player-row">
+                        <div class="media-thumb-box" id="mediaThumbContainer">
+                            <img id="mediaThumbnailImg" class="media-thumb-img" alt="Media Artwork">
+                            <div id="mediaThumbPlaceholder" class="thumb-placeholder">
+                                <span id="discCenterIcon"></span>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-icon" id="focusedIcon"></span>
-                            <div class="stat-value" id="todayFocusTime">0m</div>
-                            <div class="stat-label">Focused Today</div>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-icon" id="interceptedIcon"></span>
-                            <div class="stat-value" id="todayIntercepted">0</div>
-                            <div class="stat-label">Shorts Blocked</div>
+                        <div class="media-meta-group">
+                            <h4 id="trackTitle" class="track-title">No Media Playing</h4>
+                            <div id="trackArtist" class="track-artist">Open YouTube or Spotify in a tab</div>
+                            <span id="mediaPlatformBadge" class="media-platform-badge">STANDBY</span>
                         </div>
                     </div>
-                    <div class="retro-pill-meter">
-                        <span>Daily Target Progress</span>
-                        <div class="pill-track">
-                            <div class="pill-fill" id="dailyGoalProgressFill" style="width: 0%;"></div>
-                        </div>
-                        <span id="dailyGoalProgressPercent">0%</span>
+
+                    <!-- Interactive Video Scrub Slider (Slide through the video!) -->
+                    <div class="seek-slider-container">
+                        <span id="videoCurrentTime">00:00</span>
+                        <input type="range" id="videoSeekSlider" class="retro-seek-slider" min="0" max="100" value="0" step="1" title="Slide to seek">
+                        <span id="videoTotalDuration">00:00</span>
+                    </div>
+
+                    <div class="media-controls-row">
+                        <button class="btn-retro-ctrl" id="prev" title="Previous track / chapter">
+                            <span id="prevIcon"></span>
+                        </button>
+                        <button class="btn-retro-ctrl btn-primary-play" id="playPause" title="Play / Pause Video">
+                            <span id="playPauseIcon"></span>
+                        </button>
+                        <button class="btn-retro-ctrl" id="next" title="Next track / chapter">
+                            <span id="nextIcon"></span>
+                        </button>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. Spotify & Focus Audio Player (Exact replica of Spotify card from photo) -->
-            <section class="retro-card spotify-card">
+            <!-- 2. Dedicated Ambient Soundscapes Card (Built-in Audio Station with Play/Pause) -->
+            <section class="retro-card" id="ambientCard" data-card-area="media focus">
                 <div class="card-retro-header">
                     <div class="card-title-left">
-                        <span id="spotifyHeaderIcon"></span>
-                        <span>Spotify</span>
+                        <span id="ambientHeaderIcon"></span>
+                        <span>Ambient Soundscapes</span>
                     </div>
                     <div class="retro-dots">
                         <span class="retro-dot"></span>
@@ -97,44 +115,27 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="spotify-top-row">
-                        <div class="spotify-track-meta">
-                            <div id="trackTitle" class="track-title">Lofi Focus Radio</div>
-                            <div id="trackArtist" class="track-artist">Focus Command Center • 24/7 Deep Work</div>
+                    <div class="ambient-header-row">
+                        <div class="ambient-title-meta">
+                            <span id="ambientStationTitle" class="ambient-station-name">Lofi Chill Radio</span>
+                            <span class="ambient-station-sub">Offline Procedural Audio · 24/7 Deep Work</span>
                         </div>
-                        <div class="spotify-controls">
-                            <button class="btn-retro-ctrl" id="prev" title="Previous station">
-                                <span id="prevIcon"></span>
-                            </button>
-                            <button class="btn-retro-ctrl btn-primary-play" id="playPause" title="Play / Pause">
-                                <span id="playPauseIcon"></span>
-                            </button>
-                            <button class="btn-retro-ctrl" id="next" title="Next station">
-                                <span id="nextIcon"></span>
-                            </button>
-                        </div>
+                        <button id="ambientPlayPauseBtn" class="btn-ambient-toggle" title="Play / Pause Ambient Music">
+                            <span id="ambientPlayIcon"></span>
+                            <span id="ambientPlayText">Play Audio</span>
+                        </button>
                     </div>
 
-                    <!-- Spotify Progress Pill Bar (as seen in photo) -->
-                    <div class="spotify-progress-row">
-                        <span id="trackTimeCurrent">00:00</span>
-                        <div class="spotify-track-bar">
-                            <div id="spotifyTrackProgress" class="spotify-track-progress" style="width: 35%;"></div>
-                        </div>
-                        <span id="trackTimeTotal">25:00</span>
-                    </div>
-
-                    <!-- Soundscape & Volume Row -->
-                    <div class="spotify-footer-row">
+                    <div class="ambient-controls-row">
                         <select id="soundscapeSelect" class="retro-select" title="Focus Soundscape">
-                            <option value="lofi">Lofi Chill Radio</option>
-                            <option value="rain">Rain & Thunder Storm</option>
-                            <option value="noise">Deep Brown Noise</option>
-                            <option value="ocean">Ocean Waves</option>
-                            <option value="cafe">Cozy Café Ambience</option>
-                            <option value="binaural">40Hz Gamma Focus</option>
+                            <option value="lofi">📻 Lofi Chill Radio</option>
+                            <option value="rain">🌧️ Rain & Thunder Storm</option>
+                            <option value="noise">🌊 Deep Brown Noise</option>
+                            <option value="ocean">🏄 Ocean Waves</option>
+                            <option value="cafe">☕ Cozy Café Ambience</option>
+                            <option value="binaural">🧠 40Hz Gamma Focus</option>
                         </select>
-                        <div class="spotify-volume-group">
+                        <div class="ambient-volume-group">
                             <span id="volumeIcon"></span>
                             <input type="range" id="soundscapeVolume" min="0" max="100" value="50" class="volume-slider" title="Volume">
                             <span id="volumePercent" class="volume-readout">50%</span>
@@ -144,11 +145,11 @@
             </section>
 
             <!-- 3. Pomodoro Focus Timer -->
-            <section class="retro-card">
+            <section class="retro-card" id="timerCard" data-card-area="focus">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="timerHeaderIcon"></span>
-                        <span>Focus Timer</span>
+                        <span>Pomodoro Timer</span>
                     </div>
                     <div class="retro-dots">
                         <span class="retro-dot"></span>
@@ -159,7 +160,7 @@
                     <!-- Active Focus Goal Box -->
                     <div class="active-focus-container" id="activeFocusContainer">
                         <div class="active-goal-meta">
-                            <span class="active-goal-tag">Target Goal</span>
+                            <span class="active-goal-tag">Target Focus Goal</span>
                             <span id="activeFocusText" class="active-goal-text">No active task set</span>
                         </div>
                         <button id="quickCompleteTaskBtn" class="btn-retro-mini" title="Mark focus task done" style="display: none;">
@@ -194,7 +195,7 @@
             </section>
 
             <!-- 4. Focus Tasks & Goals Card -->
-            <section class="retro-card">
+            <section class="retro-card" id="tasksCard" data-card-area="tasks">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="tasksHeaderIcon"></span>
@@ -229,12 +230,52 @@
                 </div>
             </section>
 
-            <!-- 5. Focus Rules & Doomscroll Interceptor Card -->
-            <section class="retro-card">
+            <!-- 5. Daily Analytics & Focus Streaks -->
+            <section class="retro-card span-2" id="analyticsCard" data-card-area="stats">
+                <div class="card-retro-header">
+                    <div class="card-title-left">
+                        <span id="analyticsHeaderIcon"></span>
+                        <span>Daily Metrics & Streaks</span>
+                    </div>
+                    <div class="retro-dots">
+                        <span class="retro-dot"></span>
+                        <span class="retro-dot"></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="analytics-grid">
+                        <div class="stat-box">
+                            <span class="stat-icon" id="streakIcon"></span>
+                            <div class="stat-value" id="streakCount">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-icon" id="focusedIcon"></span>
+                            <div class="stat-value" id="todayFocusTime">0m</div>
+                            <div class="stat-label">Focused Today</div>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-icon" id="interceptedIcon"></span>
+                            <div class="stat-value" id="todayIntercepted">0</div>
+                            <div class="stat-label">Shorts Blocked</div>
+                        </div>
+                    </div>
+                    <div class="retro-pill-meter">
+                        <span>Daily Target Progress</span>
+                        <div class="pill-track">
+                            <div class="pill-fill" id="dailyGoalProgressFill" style="width: 0%;"></div>
+                        </div>
+                        <span id="dailyGoalProgressPercent">0%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Focus Rules & Doomscroll Interceptor Card -->
+            <section class="retro-card span-2" id="rulesCard" data-card-area="rules">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="rulesHeaderIcon"></span>
-                        <span>Focus Rules</span>
+                        <span>Focus Rules & Interceptor</span>
                     </div>
                     <div class="retro-dots">
                         <span class="retro-dot"></span>
@@ -246,7 +287,7 @@
                         <div class="rule-row">
                             <div class="rule-meta">
                                 <span class="rule-title">Anti-Doomscroll Intervention</span>
-                                <span class="rule-desc">Pop up reminder on YT Shorts & IG Reels</span>
+                                <span class="rule-desc">Pop up reminder on YouTube Shorts & Instagram Reels</span>
                             </div>
                             <input type="checkbox" id="doomscrollToggle" class="retro-switch" checked>
                         </div>
@@ -256,7 +297,7 @@
                                 <span class="rule-title">Shorts Daily Allowance</span>
                                 <span class="rule-desc">Quota before strict lock</span>
                             </div>
-                            <select id="shortsAllowance" class="retro-select" style="flex: 0 0 auto; width: 100px;">
+                            <select id="shortsAllowance" class="retro-select" style="flex: 0 0 auto; width: 110px;">
                                 <option value="15">15 mins</option>
                                 <option value="30" selected>30 mins</option>
                                 <option value="0">Unlimited</option>
@@ -295,8 +336,8 @@
                         <div class="shortcuts-table">
                             <div style="font-weight: 800; font-size: 0.72rem; margin-bottom: 2px;">⚡ Global Shortcuts</div>
                             <div class="shortcut-row"><span>Start/Pause Timer</span><kbd>Alt+Shift+F</kbd></div>
-                            <div class="shortcut-row"><span>Toggle Audio</span><kbd>Alt+Shift+M</kbd></div>
-                            <div class="shortcut-row"><span>Clean Article</span><kbd>Alt+Shift+Z</kbd></div>
+                            <div class="shortcut-row"><span>Toggle Ambient Audio</span><kbd>Alt+Shift+M</kbd></div>
+                            <div class="shortcut-row"><span>Clean Article Reader</span><kbd>Alt+Shift+Z</kbd></div>
                         </div>
                     </div>
                 </div>
@@ -323,7 +364,7 @@
                 </div>
             </div>
 
-            <div style="padding: 10px 14px 4px 14px; font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">
+            <div style="padding: 12px 16px 4px 16px; font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">
                 Select your preferred retro system aesthetic:
             </div>
 

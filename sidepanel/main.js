@@ -1,5 +1,5 @@
 // Focus Command Center — Main Controller (Retro Desktop OS Aesthetic)
-// Inspired by Janhvi's Portfolio.exe
+// Spacious, Decluttered, Dedicated Cards per Area
 
 // ============================================================================
 // Safe Background Message Sender (Prevents "message port closed" console errors)
@@ -36,17 +36,20 @@ function injectLucideIcons() {
     const popOutBtnIcon = document.getElementById('popOutBtnIcon');
     if (popOutBtnIcon) popOutBtnIcon.innerHTML = getLucideSvg('external-link', 14);
 
-    const analyticsHeaderIcon = document.getElementById('analyticsHeaderIcon');
-    if (analyticsHeaderIcon) analyticsHeaderIcon.innerHTML = getLucideSvg('flame', 15);
-
     const spotifyHeaderIcon = document.getElementById('spotifyHeaderIcon');
     if (spotifyHeaderIcon) spotifyHeaderIcon.innerHTML = getLucideSvg('music', 15);
+
+    const ambientHeaderIcon = document.getElementById('ambientHeaderIcon');
+    if (ambientHeaderIcon) ambientHeaderIcon.innerHTML = getLucideSvg('headphones', 15);
 
     const timerHeaderIcon = document.getElementById('timerHeaderIcon');
     if (timerHeaderIcon) timerHeaderIcon.innerHTML = getLucideSvg('clock', 15);
 
     const tasksHeaderIcon = document.getElementById('tasksHeaderIcon');
     if (tasksHeaderIcon) tasksHeaderIcon.innerHTML = getLucideSvg('list-todo', 15);
+
+    const analyticsHeaderIcon = document.getElementById('analyticsHeaderIcon');
+    if (analyticsHeaderIcon) analyticsHeaderIcon.innerHTML = getLucideSvg('flame', 15);
 
     const rulesHeaderIcon = document.getElementById('rulesHeaderIcon');
     if (rulesHeaderIcon) rulesHeaderIcon.innerHTML = getLucideSvg('sliders', 15);
@@ -60,6 +63,9 @@ function injectLucideIcons() {
     const interceptedIcon = document.getElementById('interceptedIcon');
     if (interceptedIcon) interceptedIcon.innerHTML = getLucideSvg('shield-alert', 18);
 
+    const discCenterIcon = document.getElementById('discCenterIcon');
+    if (discCenterIcon) discCenterIcon.innerHTML = getLucideSvg('music', 22);
+
     const prevIcon = document.getElementById('prevIcon');
     if (prevIcon) prevIcon.innerHTML = getLucideSvg('skip-back', 16);
 
@@ -68,6 +74,9 @@ function injectLucideIcons() {
 
     const nextIcon = document.getElementById('nextIcon');
     if (nextIcon) nextIcon.innerHTML = getLucideSvg('skip-forward', 16);
+
+    const ambientPlayIcon = document.getElementById('ambientPlayIcon');
+    if (ambientPlayIcon) ambientPlayIcon.innerHTML = getLucideSvg('play', 14);
 
     const volumeIcon = document.getElementById('volumeIcon');
     if (volumeIcon) volumeIcon.innerHTML = getLucideSvg('volume-2', 13);
@@ -112,7 +121,30 @@ if (popOutBtn) {
 }
 
 // ============================================================================
-// 2. Retro Theme Selector Engine (Catppuccin, Dracula, Nord, Sage, etc.)
+// 2. Area Navigation Switcher (Decluttering: 1 Card Area View or All)
+// ============================================================================
+const navTabs = document.querySelectorAll('.retro-nav-tab');
+const allCards = document.querySelectorAll('.retro-card');
+
+navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        navTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const selectedArea = tab.dataset.area;
+        allCards.forEach(card => {
+            const cardAreas = (card.dataset.cardArea || '').split(' ');
+            if (selectedArea === 'all' || cardAreas.includes(selectedArea)) {
+                card.classList.remove('hidden-card');
+            } else {
+                card.classList.add('hidden-card');
+            }
+        });
+    });
+});
+
+// ============================================================================
+// 3. Retro Theme Selector Engine (Catppuccin, Dracula, Nord, Sage, etc.)
 // ============================================================================
 const openThemeBtn = document.getElementById('openThemeBtn');
 const closeThemeBtn = document.getElementById('closeThemeBtn');
@@ -170,90 +202,120 @@ chrome.storage.local.get(['retroTheme'], (res) => {
 });
 
 // ============================================================================
-// 3. Daily Analytics & Streaks UI
+// 4. YouTube & Spotify Player with Live Video Seek Slider & Thumbnail
 // ============================================================================
-const streakCount = document.getElementById('streakCount');
-const todayFocusTime = document.getElementById('todayFocusTime');
-const todayIntercepted = document.getElementById('todayIntercepted');
-const dailyGoalProgressFill = document.getElementById('dailyGoalProgressFill');
-const dailyGoalProgressPercent = document.getElementById('dailyGoalProgressPercent');
+const trackTitle = document.getElementById('trackTitle');
+const trackArtist = document.getElementById('trackArtist');
+const mediaPlatformBadge = document.getElementById('mediaPlatformBadge');
+const mediaThumbnailImg = document.getElementById('mediaThumbnailImg');
+const mediaThumbPlaceholder = document.getElementById('mediaThumbPlaceholder');
+const videoSeekSlider = document.getElementById('videoSeekSlider');
+const videoCurrentTime = document.getElementById('videoCurrentTime');
+const videoTotalDuration = document.getElementById('videoTotalDuration');
+const playPauseBtn = document.getElementById('playPause');
+const playPauseIcon = document.getElementById('playPauseIcon');
+const nextBtn = document.getElementById('next');
+const prevBtn = document.getElementById('prev');
 
-function formatFocusDuration(totalSeconds) {
-    if (!totalSeconds || totalSeconds < 60) return `${totalSeconds || 0}s`;
-    const mins = Math.floor(totalSeconds / 60);
+let isUserSeeking = false;
+let isMediaPlaying = false;
+
+function formatMediaTime(totalSeconds) {
+    if (!totalSeconds || isNaN(totalSeconds)) return '00:00';
+    const s = Math.floor(totalSeconds);
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
     const hrs = Math.floor(mins / 60);
     const remMins = mins % 60;
     if (hrs > 0) {
-        return `${hrs}h ${remMins}m`;
+        return `${hrs}:${remMins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-    return `${mins}m`;
-}
-
-function updateAnalyticsUI(analytics) {
-    if (!analytics) return;
-    if (streakCount) streakCount.textContent = analytics.streak || 0;
-    if (todayFocusTime) todayFocusTime.textContent = formatFocusDuration(analytics.todayFocusSeconds);
-    if (todayIntercepted) todayIntercepted.textContent = analytics.todayShortsIntercepted || 0;
-
-    // Daily focus target calculation (e.g. 100 minutes = 6000s)
-    const targetSeconds = 6000;
-    const currentSeconds = analytics.todayFocusSeconds || 0;
-    const percent = Math.min(100, Math.round((currentSeconds / targetSeconds) * 100));
-
-    if (dailyGoalProgressFill) dailyGoalProgressFill.style.width = `${percent}%`;
-    if (dailyGoalProgressPercent) dailyGoalProgressPercent.textContent = `${percent}%`;
-}
-
-sendBgMessage({ type: 'GET_ANALYTICS' }, (res) => {
-    if (res) updateAnalyticsUI(res);
-});
-
-// ============================================================================
-// 4. Spotify & Focus Audio Player (Exact replica from inspiration photo)
-// ============================================================================
-const playPauseBtn = document.getElementById('playPause');
-const nextBtn = document.getElementById('next');
-const prevBtn = document.getElementById('prev');
-const playPauseIcon = document.getElementById('playPauseIcon');
-const trackTitle = document.getElementById('trackTitle');
-const trackArtist = document.getElementById('trackArtist');
-const soundscapeSelect = document.getElementById('soundscapeSelect');
-const soundscapeVolume = document.getElementById('soundscapeVolume');
-const volumePercent = document.getElementById('volumePercent');
-const spotifyTrackProgress = document.getElementById('spotifyTrackProgress');
-const trackTimeCurrent = document.getElementById('trackTimeCurrent');
-const trackTimeTotal = document.getElementById('trackTimeTotal');
-
-let isMusicPlaying = false;
-let currentSoundscape = 'lofi';
-let currentVolume = 0.5;
-
-function setMediaPlayingUI(playing, title, artist) {
-    isMusicPlaying = playing;
-    if (playPauseIcon) {
-        playPauseIcon.innerHTML = playing ? getLucideSvg('pause', 18) : getLucideSvg('play', 18);
-    }
-    if (title && trackTitle) trackTitle.textContent = title;
-    if (artist && trackArtist) trackArtist.textContent = artist;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
 function updateMediaUI() {
     sendBgMessage({ type: 'GET_MEDIA_INFO' }, (info) => {
         if (!info) return;
-        setMediaPlayingUI(info.isPlaying, info.title, info.artist);
-        if (info.soundscape && soundscapeSelect) {
-            soundscapeSelect.value = info.soundscape;
-            currentSoundscape = info.soundscape;
+
+        isMediaPlaying = !!info.isPlaying;
+        if (playPauseIcon) {
+            playPauseIcon.innerHTML = isMediaPlaying ? getLucideSvg('pause', 18) : getLucideSvg('play', 18);
+        }
+
+        if (trackTitle) trackTitle.textContent = info.title || 'No Media Detected';
+        if (trackArtist) trackArtist.textContent = info.artist || 'Play YouTube or Spotify in a tab';
+
+        // Platform Badge
+        if (mediaPlatformBadge) {
+            if (info.isExternal) {
+                const artistLower = (info.artist || '').toLowerCase();
+                const titleLower = (info.title || '').toLowerCase();
+                if (artistLower.includes('spotify') || titleLower.includes('spotify')) {
+                    mediaPlatformBadge.textContent = 'SPOTIFY';
+                } else if (artistLower.includes('youtube') || titleLower.includes('youtube')) {
+                    mediaPlatformBadge.textContent = 'YOUTUBE';
+                } else {
+                    mediaPlatformBadge.textContent = 'WEB VIDEO';
+                }
+            } else {
+                mediaPlatformBadge.textContent = 'STANDBY';
+            }
+        }
+
+        // Live Thumbnail Display
+        if (mediaThumbnailImg && mediaThumbPlaceholder) {
+            if (info.art) {
+                if (mediaThumbnailImg.src !== info.art) {
+                    mediaThumbnailImg.src = info.art;
+                }
+                mediaThumbnailImg.style.display = 'block';
+                mediaThumbPlaceholder.style.display = 'none';
+            } else {
+                mediaThumbnailImg.style.display = 'none';
+                mediaThumbPlaceholder.style.display = 'flex';
+            }
+        }
+
+        // Video Seek Slider Synchronization
+        if (!isUserSeeking && videoSeekSlider && videoCurrentTime && videoTotalDuration) {
+            const dur = info.duration || 0;
+            const cur = info.currentTime || 0;
+            videoSeekSlider.max = dur > 0 ? dur : 100;
+            videoSeekSlider.value = cur;
+            videoCurrentTime.textContent = formatMediaTime(cur);
+            videoTotalDuration.textContent = formatMediaTime(dur);
         }
     });
 }
-updateMediaUI();
-setInterval(updateMediaUI, 3000);
 
+updateMediaUI();
+setInterval(updateMediaUI, 2000);
+
+// Interactive Video Scrub Slider
+if (videoSeekSlider) {
+    videoSeekSlider.addEventListener('input', (e) => {
+        isUserSeeking = true;
+        const val = parseFloat(e.target.value);
+        if (videoCurrentTime) videoCurrentTime.textContent = formatMediaTime(val);
+    });
+
+    videoSeekSlider.addEventListener('change', (e) => {
+        const val = parseFloat(e.target.value);
+        sendBgMessage({ type: 'SEEK_MEDIA', time: val });
+        setTimeout(() => {
+            isUserSeeking = false;
+        }, 500);
+    });
+}
+
+// Media Transport Controls
 if (playPauseBtn) {
     playPauseBtn.addEventListener('click', () => {
         sendBgMessage({ type: 'MEDIA_COMMAND', action: 'playpause' });
-        setMediaPlayingUI(!isMusicPlaying);
+        isMediaPlaying = !isMediaPlaying;
+        if (playPauseIcon) {
+            playPauseIcon.innerHTML = isMediaPlaying ? getLucideSvg('pause', 18) : getLucideSvg('play', 18);
+        }
     });
 }
 
@@ -269,6 +331,53 @@ if (prevBtn) {
     });
 }
 
+// ============================================================================
+// 5. Dedicated Ambient Soundscapes (Built-in Audio Station with Play/Pause)
+// ============================================================================
+const ambientStationTitle = document.getElementById('ambientStationTitle');
+const ambientPlayPauseBtn = document.getElementById('ambientPlayPauseBtn');
+const ambientPlayIcon = document.getElementById('ambientPlayIcon');
+const ambientPlayText = document.getElementById('ambientPlayText');
+const soundscapeSelect = document.getElementById('soundscapeSelect');
+const soundscapeVolume = document.getElementById('soundscapeVolume');
+const volumePercent = document.getElementById('volumePercent');
+
+const SOUNDSCAPE_NAMES = {
+    'lofi': 'Lofi Chill Radio',
+    'rain': 'Rain & Thunder Storm',
+    'noise': 'Deep Brown Noise',
+    'ocean': 'Ocean Waves',
+    'cafe': 'Cozy Café Ambience',
+    'binaural': '40Hz Gamma Focus'
+};
+
+let isAmbientPlaying = false;
+let currentSoundscape = 'lofi';
+let currentVolume = 0.5;
+
+function setAmbientPlayingUI(playing) {
+    isAmbientPlaying = playing;
+    if (ambientPlayPauseBtn) {
+        ambientPlayPauseBtn.classList.toggle('playing', playing);
+    }
+    if (ambientPlayIcon) {
+        ambientPlayIcon.innerHTML = playing ? getLucideSvg('pause', 14) : getLucideSvg('play', 14);
+    }
+    if (ambientPlayText) {
+        ambientPlayText.textContent = playing ? 'Pause Audio' : 'Play Audio';
+    }
+    if (ambientStationTitle) {
+        ambientStationTitle.textContent = SOUNDSCAPE_NAMES[currentSoundscape] || 'Lofi Chill Radio';
+    }
+}
+
+if (ambientPlayPauseBtn) {
+    ambientPlayPauseBtn.addEventListener('click', () => {
+        sendBgMessage({ type: 'TOGGLE_AMBIENT' });
+        setAmbientPlayingUI(!isAmbientPlaying);
+    });
+}
+
 if (soundscapeSelect) {
     soundscapeSelect.addEventListener('change', (e) => {
         currentSoundscape = e.target.value;
@@ -278,7 +387,7 @@ if (soundscapeSelect) {
             soundscape: currentSoundscape,
             volume: currentVolume
         });
-        setMediaPlayingUI(true);
+        setAmbientPlayingUI(true);
     });
 }
 
@@ -295,7 +404,7 @@ if (soundscapeVolume) {
 }
 
 chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume'], (res) => {
-    if (res.ambientPlaying !== undefined) isMusicPlaying = res.ambientPlaying;
+    if (res.ambientPlaying !== undefined) isAmbientPlaying = res.ambientPlaying;
     if (res.currentSoundscape) {
         currentSoundscape = res.currentSoundscape;
         if (soundscapeSelect) soundscapeSelect.value = currentSoundscape;
@@ -305,11 +414,11 @@ chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume'
         if (soundscapeVolume) soundscapeVolume.value = Math.round(currentVolume * 100);
         if (volumePercent) volumePercent.textContent = `${Math.round(currentVolume * 100)}%`;
     }
-    setMediaPlayingUI(isMusicPlaying);
+    setAmbientPlayingUI(isAmbientPlaying);
 });
 
 // ============================================================================
-// 5. Pomodoro Focus Timer Logic
+// 6. Pomodoro Focus Timer Logic
 // ============================================================================
 let timeLeft = 25 * 60;
 let currentMode = 'focus';
@@ -329,22 +438,6 @@ function updateTimerDisplay() {
     const secs = timeLeft % 60;
     if (timerDisplay) {
         timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    // Sync progress in the Spotify player progress pill
-    if (spotifyTrackProgress && trackTimeCurrent && trackTimeTotal) {
-        const total = sessionTotalDuration > 0 ? sessionTotalDuration : 25 * 60;
-        const elapsed = Math.max(0, total - timeLeft);
-        const elMins = Math.floor(elapsed / 60);
-        const elSecs = elapsed % 60;
-        const totMins = Math.floor(total / 60);
-        const totSecs = total % 60;
-
-        trackTimeCurrent.textContent = `${elMins.toString().padStart(2, '0')}:${elSecs.toString().padStart(2, '0')}`;
-        trackTimeTotal.textContent = `${totMins.toString().padStart(2, '0')}:${totSecs.toString().padStart(2, '0')}`;
-
-        const pct = Math.min(100, Math.round((elapsed / total) * 100));
-        spotifyTrackProgress.style.width = `${pct}%`;
     }
 }
 
@@ -445,10 +538,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type === 'ANALYTICS_UPDATE') {
         updateAnalyticsUI(message.analytics);
     } else if (message.type === 'AMBIENT_STATE_CHANGED') {
-        setMediaPlayingUI(message.isPlaying);
+        setAmbientPlayingUI(message.isPlaying);
         if (message.soundscape && soundscapeSelect) {
             soundscapeSelect.value = message.soundscape;
             currentSoundscape = message.soundscape;
+            if (ambientStationTitle) {
+                ambientStationTitle.textContent = SOUNDSCAPE_NAMES[currentSoundscape] || 'Lofi Chill Radio';
+            }
         }
         if (message.volume !== undefined && soundscapeVolume) {
             soundscapeVolume.value = Math.round(message.volume * 100);
@@ -460,89 +556,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     return false;
 });
-
-// ============================================================================
-// 6. Focus Rules & Settings Logic
-// ============================================================================
-const blockAllToggle = document.getElementById('blockAll');
-const blockedSitesArea = document.getElementById('blockedSites');
-
-function saveBlockSettings() {
-    const sites = (blockedSitesArea?.value || '').split('\n');
-    sendBgMessage({
-        type: 'UPDATE_BLOCK_SETTINGS',
-        blockAll: !!blockAllToggle?.checked,
-        blockedSites: sites
-    });
-
-    chrome.storage.local.set({
-        blockAll: !!blockAllToggle?.checked,
-        blockedSites: blockedSitesArea?.value || ''
-    });
-}
-
-if (blockAllToggle) blockAllToggle.addEventListener('change', saveBlockSettings);
-if (blockedSitesArea) blockedSitesArea.addEventListener('input', saveBlockSettings);
-
-chrome.storage.local.get(['blockAll', 'blockedSites'], (res) => {
-    if (res.blockAll !== undefined && blockAllToggle) blockAllToggle.checked = res.blockAll;
-    if (res.blockedSites !== undefined && blockedSitesArea) blockedSitesArea.value = res.blockedSites;
-});
-
-const removeJSToggle = document.getElementById('removeJS');
-if (removeJSToggle) {
-    removeJSToggle.addEventListener('change', async (e) => {
-        chrome.storage.local.set({ cleanseActive: e.target.checked });
-        try {
-            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (tab && tab.id) {
-                chrome.tabs.sendMessage(tab.id, {
-                    type: 'TRIGGER_CLEANSE',
-                    state: e.target.checked
-                }, () => {
-                    const _ = chrome.runtime.lastError;
-                });
-            }
-        } catch (err) {}
-    });
-
-    chrome.storage.local.get(['cleanseActive'], (res) => {
-        if (res.cleanseActive) removeJSToggle.checked = true;
-    });
-}
-
-const doomscrollToggle = document.getElementById('doomscrollToggle');
-if (doomscrollToggle) {
-    chrome.storage.local.get(['doomscrollEnabled'], (res) => {
-        doomscrollToggle.checked = res.doomscrollEnabled !== false;
-    });
-    doomscrollToggle.addEventListener('change', (e) => {
-        chrome.storage.local.set({ doomscrollEnabled: e.target.checked });
-    });
-}
-
-const shortsAllowance = document.getElementById('shortsAllowance');
-if (shortsAllowance) {
-    chrome.storage.local.get(['shortsBudgetMinutes'], (res) => {
-        if (res.shortsBudgetMinutes !== undefined) {
-            shortsAllowance.value = res.shortsBudgetMinutes.toString();
-        }
-    });
-    shortsAllowance.addEventListener('change', (e) => {
-        const val = parseInt(e.target.value, 10);
-        chrome.storage.local.set({ shortsBudgetMinutes: val });
-    });
-}
-
-const timerChimeToggle = document.getElementById('timerChimeToggle');
-if (timerChimeToggle) {
-    chrome.storage.local.get(['timerChimeEnabled'], (res) => {
-        timerChimeToggle.checked = res.timerChimeEnabled !== false;
-    });
-    timerChimeToggle.addEventListener('change', (e) => {
-        chrome.storage.local.set({ timerChimeEnabled: e.target.checked });
-    });
-}
 
 // ============================================================================
 // 7. Focus Tasks & Goals Logic
@@ -777,3 +790,124 @@ chrome.storage.onChanged.addListener((changes, area) => {
         renderTasks();
     }
 });
+
+// ============================================================================
+// 8. Daily Analytics & Streaks UI
+// ============================================================================
+const streakCount = document.getElementById('streakCount');
+const todayFocusTime = document.getElementById('todayFocusTime');
+const todayIntercepted = document.getElementById('todayIntercepted');
+const dailyGoalProgressFill = document.getElementById('dailyGoalProgressFill');
+const dailyGoalProgressPercent = document.getElementById('dailyGoalProgressPercent');
+
+function formatFocusDuration(totalSeconds) {
+    if (!totalSeconds || totalSeconds < 60) return `${totalSeconds || 0}s`;
+    const mins = Math.floor(totalSeconds / 60);
+    const hrs = Math.floor(mins / 60);
+    const remMins = mins % 60;
+    if (hrs > 0) {
+        return `${hrs}h ${remMins}m`;
+    }
+    return `${mins}m`;
+}
+
+function updateAnalyticsUI(analytics) {
+    if (!analytics) return;
+    if (streakCount) streakCount.textContent = analytics.streak || 0;
+    if (todayFocusTime) todayFocusTime.textContent = formatFocusDuration(analytics.todayFocusSeconds);
+    if (todayIntercepted) todayIntercepted.textContent = analytics.todayShortsIntercepted || 0;
+
+    const targetSeconds = 6000;
+    const currentSeconds = analytics.todayFocusSeconds || 0;
+    const percent = Math.min(100, Math.round((currentSeconds / targetSeconds) * 100));
+
+    if (dailyGoalProgressFill) dailyGoalProgressFill.style.width = `${percent}%`;
+    if (dailyGoalProgressPercent) dailyGoalProgressPercent.textContent = `${percent}%`;
+}
+
+sendBgMessage({ type: 'GET_ANALYTICS' }, (res) => {
+    if (res) updateAnalyticsUI(res);
+});
+
+// ============================================================================
+// 9. Focus Rules & Settings Logic
+// ============================================================================
+const blockAllToggle = document.getElementById('blockAll');
+const blockedSitesArea = document.getElementById('blockedSites');
+
+function saveBlockSettings() {
+    const sites = (blockedSitesArea?.value || '').split('\n');
+    sendBgMessage({
+        type: 'UPDATE_BLOCK_SETTINGS',
+        blockAll: !!blockAllToggle?.checked,
+        blockedSites: sites
+    });
+
+    chrome.storage.local.set({
+        blockAll: !!blockAllToggle?.checked,
+        blockedSites: blockedSitesArea?.value || ''
+    });
+}
+
+if (blockAllToggle) blockAllToggle.addEventListener('change', saveBlockSettings);
+if (blockedSitesArea) blockedSitesArea.addEventListener('input', saveBlockSettings);
+
+chrome.storage.local.get(['blockAll', 'blockedSites'], (res) => {
+    if (res.blockAll !== undefined && blockAllToggle) blockAllToggle.checked = res.blockAll;
+    if (res.blockedSites !== undefined && blockedSitesArea) blockedSitesArea.value = res.blockedSites;
+});
+
+const removeJSToggle = document.getElementById('removeJS');
+if (removeJSToggle) {
+    removeJSToggle.addEventListener('change', async (e) => {
+        chrome.storage.local.set({ cleanseActive: e.target.checked });
+        try {
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tab && tab.id) {
+                chrome.tabs.sendMessage(tab.id, {
+                    type: 'TRIGGER_CLEANSE',
+                    state: e.target.checked
+                }, () => {
+                    const _ = chrome.runtime.lastError;
+                });
+            }
+        } catch (err) {}
+    });
+
+    chrome.storage.local.get(['cleanseActive'], (res) => {
+        if (res.cleanseActive) removeJSToggle.checked = true;
+    });
+}
+
+const doomscrollToggle = document.getElementById('doomscrollToggle');
+if (doomscrollToggle) {
+    chrome.storage.local.get(['doomscrollEnabled'], (res) => {
+        doomscrollToggle.checked = res.doomscrollEnabled !== false;
+    });
+    doomscrollToggle.addEventListener('change', (e) => {
+        chrome.storage.local.set({ doomscrollEnabled: e.target.checked });
+    });
+}
+
+const shortsAllowance = document.getElementById('shortsAllowance');
+if (shortsAllowance) {
+    chrome.storage.local.get(['shortsBudgetMinutes'], (res) => {
+        if (res.shortsBudgetMinutes !== undefined) {
+            shortsAllowance.value = res.shortsBudgetMinutes.toString();
+        }
+    });
+    shortsAllowance.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value, 10);
+        chrome.storage.local.set({ shortsBudgetMinutes: val });
+    });
+}
+
+const timerChimeToggle = document.getElementById('timerChimeToggle');
+if (timerChimeToggle) {
+    chrome.storage.local.get(['timerChimeEnabled'], (res) => {
+        timerChimeToggle.checked = res.timerChimeEnabled !== false;
+    });
+    timerChimeToggle.addEventListener('change', (e) => {
+        chrome.storage.local.set({ timerChimeEnabled: e.target.checked });
+    });
+}

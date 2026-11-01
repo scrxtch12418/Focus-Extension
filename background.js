@@ -296,6 +296,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse({ success: false });
         });
         return true;
+    } else if (message.type === 'SEEK_MEDIA') {
+        seekMedia(message.time).then(() => {
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
+        });
+        return true;
+    } else if (message.type === 'TOGGLE_AMBIENT') {
+        toggleAmbientAudio().then(() => {
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
+        });
+        return true;
     } else if (message.type === 'GET_MEDIA_INFO') {
         fetchMediaInfo().then(info => {
             sendResponse(info);
@@ -565,6 +579,29 @@ async function executeMediaCommand(action) {
     }
 }
 
+async function seekMedia(time) {
+    try {
+        let tabs = await chrome.tabs.query({ audible: true });
+        if (tabs.length === 0) {
+            tabs = await chrome.tabs.query({ url: ["*://*.youtube.com/*", "*://*.spotify.com/*"] });
+        }
+        if (tabs.length > 0 && tabs[0].id) {
+            await chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                func: (targetSec) => {
+                    const video = document.querySelector('video');
+                    if (video && !isNaN(targetSec)) {
+                        video.currentTime = targetSec;
+                    }
+                },
+                args: [time]
+            });
+        }
+    } catch (e) {
+        console.error('Seek error:', e);
+    }
+}
+
 async function fetchMediaInfo() {
     try {
         let tabs = await chrome.tabs.query({ audible: true });
@@ -574,16 +611,14 @@ async function fetchMediaInfo() {
         }
 
         if (tabs.length === 0 || !tabs[0].id) {
-            const res = await chrome.storage.local.get(['ambientPlaying', 'currentSoundscape']);
-            const current = res.currentSoundscape || 'lofi';
-            const title = SOUNDSCAPE_TITLES[current] || 'Lofi Focus Radio';
             return {
-                title,
-                artist: 'Focus Command Center • 24/7 Deep Work',
+                title: 'No Active Tab Media',
+                artist: 'Play a YouTube video or Spotify track',
                 art: '',
-                isBuiltin: true,
-                isPlaying: !!res.ambientPlaying,
-                soundscape: current
+                currentTime: 0,
+                duration: 0,
+                isPlaying: false,
+                isExternal: false
             };
         }
 
@@ -592,32 +627,48 @@ async function fetchMediaInfo() {
         const [{ result }] = await chrome.scripting.executeScript({
             target: { tabId: targetTab.id },
             func: () => {
+                const video = document.querySelector('video');
+                const currentTime = video ? Math.floor(video.currentTime || 0) : 0;
+                const duration = video ? Math.floor(video.duration || 0) : 0;
+                const isPlaying = video ? !video.paused : false;
+
+                let title = document.title.replace(/^\(\d+\)\s+/, '');
+                let artist = window.location.hostname.replace('www.', '');
+                let art = '';
+
                 if (navigator.mediaSession && navigator.mediaSession.metadata) {
                     const meta = navigator.mediaSession.metadata;
-                    return {
-                        title: meta.title || document.title,
-                        artist: meta.artist || '',
-                        art: meta.artwork && meta.artwork.length > 0 ? meta.artwork[meta.artwork.length - 1].src : ''
-                    };
+                    if (meta.title) title = meta.title;
+                    if (meta.artist) artist = meta.artist;
+                    if (meta.artwork && meta.artwork.length > 0) {
+                        art = meta.artwork[meta.artwork.length - 1].src;
+                    }
                 }
 
-                let art = '';
-                if (window.location.hostname.includes('youtube.com')) {
+                if (!art && window.location.hostname.includes('youtube.com')) {
                     const ytVideoId = new URLSearchParams(window.location.search).get('v');
-                    if (ytVideoId) art = `https://i.ytimg.com/vi/${ytVideoId}/maxresdefault.jpg`;
+                    if (ytVideoId) art = `https://i.ytimg.com/vi/${ytVideoId}/hqdefault.jpg`;
                 }
 
-                const cleanTitle = document.title.replace(/^\(\d+\)\s+/, '');
+                if (!art && window.location.hostname.includes('spotify.com')) {
+                    const spotifyArt = document.querySelector('[data-testid="cover-art-image"]');
+                    if (spotifyArt && spotifyArt.src) art = spotifyArt.src;
+                }
+
                 return {
-                    title: cleanTitle,
-                    artist: window.location.hostname.replace('www.', ''),
-                    art: art
+                    title,
+                    artist,
+                    art,
+                    currentTime,
+                    duration,
+                    isPlaying,
+                    isExternal: true
                 };
             }
         });
-        return result || { title: 'Lofi Focus Radio', artist: 'Focus Center', art: '' };
+        return result || { title: 'No Media Playing', artist: 'Open YouTube or Spotify', art: '', currentTime: 0, duration: 0, isPlaying: false, isExternal: false };
     } catch (error) {
-        return { title: 'Lofi Focus Radio', artist: 'Focus Center', art: '' };
+        return { title: 'No Media Playing', artist: 'Open YouTube or Spotify', art: '', currentTime: 0, duration: 0, isPlaying: false, isExternal: false };
     }
 }
 

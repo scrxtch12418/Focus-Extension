@@ -235,7 +235,7 @@
 }
 
 /* ==========================================================================
-   Global Reset & Old Monospaced Font Restoration
+   Global Reset & Monospaced Font
    ========================================================================== */
 * {
     box-sizing: border-box;
@@ -245,7 +245,7 @@
 
 body {
     margin: 0;
-    padding: 12px;
+    padding: 16px;
     background: linear-gradient(180deg, var(--bg-canvas-top) 0%, var(--bg-canvas) 45%, var(--bg-canvas-bottom) 100%);
     background-attachment: fixed;
     color: var(--text-main);
@@ -256,7 +256,6 @@ body {
     position: relative;
 }
 
-/* Lucide Vector Icons Standard */
 svg.lucide {
     display: inline-block;
     vertical-align: middle;
@@ -267,7 +266,7 @@ svg.lucide {
 }
 
 /* ==========================================================================
-   Pixel Art Clouds & Retro Horizon Background (Matches inspiration photo)
+   Pixel Art Clouds & Retro Horizon Background
    ========================================================================== */
 .retro-backdrop {
     position: fixed;
@@ -289,19 +288,19 @@ svg.lucide {
 }
 
 .pixel-cloud-1 {
-    top: 35px;
+    top: 30px;
     right: 5%;
     width: 220px;
 }
 
 .pixel-cloud-2 {
-    top: 140px;
+    top: 130px;
     left: 8%;
     width: 160px;
 }
 
 .pixel-cloud-3 {
-    top: 260px;
+    top: 250px;
     right: 18%;
     width: 140px;
 }
@@ -326,19 +325,19 @@ svg.lucide {
     position: relative;
     z-index: 1;
     width: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
-/* Top Window Title Bar (Matches JANHVI'S PORTFOLIO.EXE from photo) */
+/* Top Window Header Bar */
 .retro-window-header {
     background: var(--window-header-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 8px;
-    padding: 8px 14px;
+    padding: 10px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -351,7 +350,7 @@ svg.lucide {
     align-items: center;
     gap: 8px;
     font-weight: 800;
-    font-size: 0.86rem;
+    font-size: 0.88rem;
     letter-spacing: 0.6px;
     color: var(--text-main);
     text-transform: uppercase;
@@ -366,18 +365,17 @@ svg.lucide {
 .window-actions-right {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
-/* Retro System Action Buttons */
 .retro-btn-header {
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     color: var(--text-main);
     border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 5px 12px;
+    font-size: 0.76rem;
+    font-weight: 800;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -388,7 +386,6 @@ svg.lucide {
 
 .retro-btn-header:hover {
     background: var(--accent-subtle);
-    border-color: var(--border-color);
 }
 
 .retro-btn-header:active {
@@ -397,36 +394,81 @@ svg.lucide {
 }
 
 .retro-btn-icon {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     padding: 0;
     justify-content: center;
 }
 
 /* ==========================================================================
-   Full-Width Edge-to-Edge Cards Grid
+   Decluttering Applet Navigation Bar (Clean Breathing Room Tabs)
+   ========================================================================== */
+.retro-nav-bar {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    box-sizing: border-box;
+}
+
+.retro-nav-tab {
+    flex: 1;
+    min-width: fit-content;
+    background: var(--btn-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    box-shadow: 1.5px 1.5px 0px var(--retro-shadow);
+    transition: all 0.1s ease;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.retro-nav-tab:hover {
+    background: var(--accent-subtle);
+    color: var(--text-main);
+}
+
+.retro-nav-tab.active {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--border-color);
+}
+
+.retro-nav-tab:active {
+    transform: translate(1px, 1px);
+    box-shadow: 0px 0px 0px;
+}
+
+/* ==========================================================================
+   Spacious Retro Cards Grid (Ample Breathing Room)
    ========================================================================== */
 .retro-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 16px;
     width: 100%;
     box-sizing: border-box;
 }
 
-/* On wider screens (sidepanel stretched or floating window), span cleanly */
 @media (min-width: 680px) {
     .retro-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
     }
     .span-2 {
         grid-column: 1 / -1;
     }
 }
 
-/* ==========================================================================
-   Retro Card Architecture (Subcards with signature [o o] dots from photo)
-   ========================================================================== */
+/* Card Shell */
 .retro-card {
     background: var(--card-bg);
     border: 1.5px solid var(--border-color);
@@ -436,12 +478,17 @@ svg.lucide {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.retro-card.hidden-card {
+    display: none !important;
 }
 
 .card-retro-header {
     background: var(--card-header-bg);
     border-bottom: 1.5px solid var(--border-color);
-    padding: 7px 12px;
+    padding: 8px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -458,7 +505,6 @@ svg.lucide {
     color: var(--text-main);
 }
 
-/* Signature [o o] Retro Circles */
 .retro-dots {
     display: flex;
     align-items: center;
@@ -474,104 +520,60 @@ svg.lucide {
 }
 
 .card-body {
-    padding: 12px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 /* ==========================================================================
-   1. Analytics Card (Metrics & Streaks)
+   1. YouTube & Spotify Player with Live Video Seek Slider & Thumbnail
    ========================================================================== */
-.analytics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+.media-player-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-.stat-box {
-    background: var(--inset-bg);
+.media-thumb-box {
+    width: 72px;
+    height: 72px;
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 8px 4px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    box-shadow: 1px 1px 0px var(--retro-shadow);
-}
-
-.stat-icon {
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-}
-
-.stat-value {
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: var(--text-main);
-    line-height: 1.1;
-}
-
-.stat-label {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    font-weight: 700;
-}
-
-/* Retro Pill Progress Bars (Software List style from photo) */
-.retro-pill-meter {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: 0.76rem;
-    font-weight: 700;
-}
-
-.pill-track {
-    flex: 1;
-    height: 12px;
-    background: var(--accent-pill);
-    border: 1.5px solid var(--border-color);
-    border-radius: 999px;
     overflow: hidden;
+    background: var(--inset-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 0px var(--retro-shadow);
+    flex-shrink: 0;
     position: relative;
 }
 
-.pill-fill {
+.media-thumb-img {
+    width: 100%;
     height: 100%;
-    background: var(--accent-pill-fill);
-    border-radius: 999px;
-    transition: width 0.3s ease;
-    width: 0%;
+    object-fit: cover;
+    display: none;
 }
 
-/* ==========================================================================
-   2. Spotify & Focus Audio Player (Exact replica of Spotify card from photo)
-   ========================================================================== */
-.spotify-card .card-body {
-    gap: 10px;
-}
-
-.spotify-top-row {
+.thumb-placeholder {
+    color: var(--accent);
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
 }
 
-.spotify-track-meta {
+.media-meta-group {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .track-title {
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     font-weight: 800;
     color: var(--text-main);
     white-space: nowrap;
@@ -587,14 +589,61 @@ svg.lucide {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 2px;
 }
 
-.spotify-controls {
+.media-platform-badge {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border: 1px solid var(--border-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+/* Interactive Video Seek Slider */
+.seek-slider-container {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
+    gap: 10px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.retro-seek-slider {
+    flex: 1;
+    height: 10px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--accent-pill);
+    border: 1.5px solid var(--border-color);
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+}
+
+.retro-seek-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 1.5px solid var(--border-color);
+    cursor: pointer;
+    box-shadow: 1px 1px 0px var(--retro-shadow);
+}
+
+/* Media Transport Controls */
+.media-controls-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
 }
 
 .btn-retro-ctrl {
@@ -602,8 +651,8 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     color: var(--text-main);
     border-radius: 6px;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -621,46 +670,73 @@ svg.lucide {
     box-shadow: 0px 0px 0px;
 }
 
-.btn-retro-ctrl.btn-primary-play {
+.btn-primary-play {
     background: var(--accent-subtle);
     border-color: var(--border-color);
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
 }
 
-/* Spotify Progress Pill Bar */
-.spotify-progress-row {
+/* ==========================================================================
+   2. Dedicated Ambient Soundscapes Card (Built-in Audio with Play/Pause)
+   ========================================================================== */
+.ambient-header-row {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+}
+
+.ambient-title-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.ambient-station-name {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.ambient-station-sub {
     font-size: 0.72rem;
-    font-weight: 700;
     color: var(--text-muted);
 }
 
-.spotify-track-bar {
-    flex: 1;
-    height: 10px;
-    background: var(--accent-pill);
+.btn-ambient-toggle {
+    background: var(--accent-subtle);
     border: 1.5px solid var(--border-color);
-    border-radius: 999px;
-    overflow: hidden;
+    color: var(--text-main);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px var(--retro-shadow);
+    transition: all 0.1s ease;
 }
 
-.spotify-track-progress {
-    height: 100%;
-    background: var(--accent-pill-fill);
-    width: 40%;
-    border-radius: 999px;
-    transition: width 0.3s ease;
+.btn-ambient-toggle:hover {
+    background: var(--accent-pill);
 }
 
-/* Integrated Soundscape & Volume Controls */
-.spotify-footer-row {
+.btn-ambient-toggle.playing {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.btn-ambient-toggle:active {
+    transform: translate(1px, 1px);
+    box-shadow: 0px 0px 0px;
+}
+
+.ambient-controls-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 2px;
+    gap: 12px;
 }
 
 .retro-select {
@@ -669,24 +745,24 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     color: var(--text-main);
     border-radius: 6px;
-    padding: 5px 8px;
-    font-size: 0.75rem;
+    padding: 7px 10px;
+    font-size: 0.78rem;
     font-weight: 700;
     box-shadow: 1px 1px 0px var(--retro-shadow);
     cursor: pointer;
     outline: none;
 }
 
-.spotify-volume-group {
+.ambient-volume-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     flex-shrink: 0;
 }
 
 .volume-slider {
-    width: 65px;
-    height: 6px;
+    width: 75px;
+    height: 7px;
     -webkit-appearance: none;
     appearance: none;
     background: var(--accent-pill);
@@ -697,8 +773,8 @@ svg.lucide {
 
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background: var(--accent);
     border: 1.5px solid var(--border-color);
@@ -706,21 +782,21 @@ svg.lucide {
 }
 
 .volume-readout {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    min-width: 28px;
+    min-width: 30px;
     text-align: right;
     color: var(--text-muted);
 }
 
 /* ==========================================================================
-   3. Focus Pomodoro Timer Card
+   3. Pomodoro Focus Timer Card
    ========================================================================== */
 .active-focus-container {
     background: var(--inset-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -742,8 +818,8 @@ svg.lucide {
 }
 
 .active-goal-text {
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 0.84rem;
+    font-weight: 800;
     color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
@@ -754,8 +830,8 @@ svg.lucide {
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 4px;
-    padding: 3px 8px;
-    font-size: 0.7rem;
+    padding: 4px 9px;
+    font-size: 0.72rem;
     font-weight: 800;
     cursor: pointer;
     box-shadow: 1px 1px 0px var(--retro-shadow);
@@ -774,12 +850,11 @@ svg.lucide {
     box-shadow: 0px 0px 0px;
 }
 
-/* LCD Inset Timer Box */
 .timer-retro-box {
     background: var(--inset-bg);
     border: 2px solid var(--border-color);
     border-radius: 6px;
-    padding: 12px;
+    padding: 14px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -787,7 +862,7 @@ svg.lucide {
 }
 
 .timer-digits {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     font-weight: 900;
     letter-spacing: 2px;
     color: var(--text-main);
@@ -798,8 +873,8 @@ svg.lucide {
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -818,23 +893,22 @@ svg.lucide {
     box-shadow: 0px 0px 0px;
 }
 
-/* Timer Control Actions */
 .timer-actions-row {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
 .btn-timer-primary {
     flex: 3;
     background: var(--accent);
-    color: var(--bg-canvas-top);
+    color: #ffffff;
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 9px 12px;
-    font-size: 0.88rem;
+    padding: 11px 14px;
+    font-size: 0.92rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     cursor: pointer;
     box-shadow: 2px 2px 0px var(--retro-shadow);
     transition: all 0.1s ease;
@@ -871,22 +945,21 @@ svg.lucide {
     box-shadow: 0px 0px 0px;
 }
 
-/* Session Targets Meta */
 .session-meta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 700;
 }
 
 .session-target-input {
-    width: 48px;
+    width: 50px;
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 4px;
-    padding: 3px 6px;
-    font-size: 0.76rem;
+    padding: 4px 6px;
+    font-size: 0.78rem;
     font-weight: 700;
     text-align: center;
     color: var(--text-main);
@@ -897,7 +970,7 @@ svg.lucide {
    ========================================================================== */
 .todo-input-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .retro-input {
@@ -905,8 +978,8 @@ svg.lucide {
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 0.78rem;
+    padding: 9px 12px;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-main);
     box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
@@ -921,8 +994,8 @@ svg.lucide {
     background: var(--accent-subtle);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 0 12px;
-    font-size: 0.78rem;
+    padding: 0 14px;
+    font-size: 0.8rem;
     font-weight: 800;
     color: var(--text-main);
     cursor: pointer;
@@ -938,7 +1011,6 @@ svg.lucide {
     box-shadow: 0px 0px 0px;
 }
 
-/* Filter System Tabs */
 .todo-filters-row {
     display: flex;
     gap: 6px;
@@ -949,7 +1021,7 @@ svg.lucide {
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 4px;
-    padding: 4px;
+    padding: 5px;
     font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -969,7 +1041,6 @@ svg.lucide {
     box-shadow: 0px 0px 0px;
 }
 
-/* Todo List Items */
 .todo-list {
     list-style: none;
     margin: 0;
@@ -977,7 +1048,7 @@ svg.lucide {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    max-height: 220px;
+    max-height: 240px;
     overflow-y: auto;
 }
 
@@ -985,7 +1056,7 @@ svg.lucide {
     background: var(--inset-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 6px 8px;
+    padding: 7px 10px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1028,7 +1099,7 @@ svg.lucide {
 
 .todo-text {
     flex: 1;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--text-main);
     white-space: nowrap;
@@ -1052,25 +1123,95 @@ svg.lucide {
 
 .todo-empty {
     text-align: center;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     color: var(--text-muted);
-    padding: 14px 4px;
+    padding: 16px 4px;
 }
 
 /* ==========================================================================
-   5. Focus Rules & Doomscroll Interceptor Card
+   5. Analytics Card (Metrics & Streaks)
+   ========================================================================== */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.stat-box {
+    background: var(--inset-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 6px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 1px 1px 0px var(--retro-shadow);
+}
+
+.stat-icon {
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 700;
+}
+
+.retro-pill-meter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.pill-track {
+    flex: 1;
+    height: 12px;
+    background: var(--accent-pill);
+    border: 1.5px solid var(--border-color);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.pill-fill {
+    height: 100%;
+    background: var(--accent-pill-fill);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* ==========================================================================
+   6. Focus Rules & Doomscroll Interceptor Card
    ========================================================================== */
 .rules-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .rule-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .rule-meta {
@@ -1079,20 +1220,19 @@ svg.lucide {
 }
 
 .rule-title {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: var(--text-main);
 }
 
 .rule-desc {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
 }
 
-/* Retro Toggle Switch */
 .retro-switch {
-    width: 36px;
-    height: 20px;
+    width: 38px;
+    height: 21px;
     appearance: none;
     -webkit-appearance: none;
     background: var(--btn-bg);
@@ -1110,8 +1250,8 @@ svg.lucide {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 12px;
-    height: 12px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
     background: var(--border-color);
     transition: transform 0.15s ease;
@@ -1122,7 +1262,7 @@ svg.lucide {
 }
 
 .retro-switch:checked::before {
-    transform: translateX(16px);
+    transform: translateX(17px);
     background: #ffffff;
 }
 
@@ -1131,8 +1271,8 @@ svg.lucide {
     background: var(--btn-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 6px 8px;
-    font-size: 0.74rem;
+    padding: 7px 10px;
+    font-size: 0.76rem;
     font-weight: 600;
     color: var(--text-main);
     resize: vertical;
@@ -1144,11 +1284,11 @@ svg.lucide {
     background: var(--inset-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    font-size: 0.72rem;
+    gap: 6px;
+    font-size: 0.74rem;
 }
 
 .shortcut-row {
@@ -1161,15 +1301,14 @@ kbd {
     background: var(--btn-bg);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    padding: 2px 5px;
-    font-size: 0.68rem;
+    padding: 2px 6px;
+    font-size: 0.7rem;
     font-weight: 800;
     box-shadow: 1px 1px 0px var(--retro-shadow);
 }
 
 /* ==========================================================================
-   Retro Theme Customization Centre Modal
-   (Replaces the Arc color picker with Catppuccin, Dracula, Nord, Sage, etc.)
+   Retro Theme Selector Modal
    ========================================================================== */
 .retro-modal-backdrop {
     position: fixed;
@@ -1203,7 +1342,7 @@ kbd {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
-    padding: 14px;
+    padding: 16px;
     overflow-y: auto;
 }
 

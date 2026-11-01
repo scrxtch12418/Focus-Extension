@@ -25,7 +25,7 @@ let timerState = {
 
 // Force Chrome to open the Side Panel when the icon is clicked
 if (chrome.sidePanel) {
-    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error);
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
 }
 
 // Restore timer state on service worker startup
@@ -169,7 +169,9 @@ async function toggleAmbientAudio() {
         type: willPlay ? 'PLAY_SOUNDSCAPE' : 'PAUSE_SOUNDSCAPE',
         soundscape,
         volume
-    }).catch(() => {});
+    }, () => {
+        if (chrome.runtime.lastError) {}
+    });
 
     await chrome.storage.local.set({ ambientPlaying: willPlay });
     broadcastAmbientState(willPlay, soundscape, volume);
@@ -215,7 +217,9 @@ async function handleBuiltinMediaCommand(action) {
             type: isPlaying ? 'PLAY_SOUNDSCAPE' : 'PAUSE_SOUNDSCAPE',
             soundscape: currentSoundscape,
             volume
-        }).catch(() => {});
+        }, () => {
+            if (chrome.runtime.lastError) {}
+        });
         await chrome.storage.local.set({ ambientPlaying: isPlaying });
         broadcastAmbientState(isPlaying, currentSoundscape, volume);
     } else if (action === 'next' || action === 'prev') {
@@ -234,7 +238,9 @@ async function handleBuiltinMediaCommand(action) {
                 type: 'PLAY_SOUNDSCAPE',
                 soundscape: currentSoundscape,
                 volume
-            }).catch(() => {});
+            }, () => {
+                if (chrome.runtime.lastError) {}
+            });
         }
         await chrome.storage.local.set({ currentSoundscape });
         broadcastAmbientState(isPlaying, currentSoundscape, volume);
@@ -245,17 +251,30 @@ async function handleBuiltinMediaCommand(action) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'START_TIMER') {
         startTimer();
+        sendResponse({ success: true });
+        return false;
     } else if (message.type === 'STOP_TIMER') {
         stopTimer();
+        sendResponse({ success: true });
+        return false;
     } else if (message.type === 'RESET_TIMER') {
         resetTimer();
+        sendResponse({ success: true });
+        return false;
     } else if (message.type === 'GET_STATUS') {
         sendResponse(getCurrentStatus());
+        return false;
     } else if (message.type === 'GET_ANALYTICS') {
-        getAnalytics().then(analytics => sendResponse(analytics));
+        getAnalytics().then(analytics => {
+            sendResponse(analytics);
+        }).catch(() => {
+            sendResponse(null);
+        });
         return true;
     } else if (message.type === 'RECORD_INTERCEPTION') {
         recordShortsInterception();
+        sendResponse({ success: true });
+        return false;
     } else if (message.type === 'SET_TIME') {
         if (!timerState.isRunning && timerState.mode === 'focus') {
             timerState.focusDuration = message.time;
@@ -263,16 +282,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             saveTimerState();
             broadcastStatus('TICK');
         }
+        sendResponse({ success: true });
+        return false;
     } else if (message.type === 'SET_SESSION_TARGET') {
         timerState.sessionTarget = Math.max(1, message.target || 1);
         saveTimerState();
+        sendResponse({ success: true });
+        return false;
     } else if (message.type === 'MEDIA_COMMAND') {
-        executeMediaCommand(message.action);
+        executeMediaCommand(message.action).then(() => {
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
+        });
+        return true;
     } else if (message.type === 'GET_MEDIA_INFO') {
-        fetchMediaInfo().then(info => sendResponse(info));
+        fetchMediaInfo().then(info => {
+            sendResponse(info);
+        }).catch(() => {
+            sendResponse({ title: 'Lofi Focus Radio', artist: 'Focus Center', isBuiltin: true });
+        });
         return true;
     } else if (message.type === 'UPDATE_BLOCK_SETTINGS') {
-        updateBlockRules(message.blockAll, message.blockedSites);
+        updateBlockRules(message.blockAll, message.blockedSites).then(() => {
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
+        });
+        return true;
     } else if (message.type === 'PLAY_SOUNDSCAPE') {
         setupOffscreenDocument().then(() => {
             chrome.runtime.sendMessage({
@@ -280,24 +317,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 type: 'PLAY_SOUNDSCAPE',
                 soundscape: message.soundscape,
                 volume: message.volume
-            }).catch(() => {});
+            }, () => {
+                if (chrome.runtime.lastError) {}
+            });
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
         });
+        return true;
     } else if (message.type === 'PAUSE_SOUNDSCAPE') {
         setupOffscreenDocument().then(() => {
             chrome.runtime.sendMessage({
                 target: 'offscreen',
                 type: 'PAUSE_SOUNDSCAPE'
-            }).catch(() => {});
+            }, () => {
+                if (chrome.runtime.lastError) {}
+            });
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
         });
+        return true;
     } else if (message.type === 'SET_AMBIENT_VOLUME') {
         setupOffscreenDocument().then(() => {
             chrome.runtime.sendMessage({
                 target: 'offscreen',
                 type: 'SET_AMBIENT_VOLUME',
                 volume: message.volume
-            }).catch(() => {});
+            }, () => {
+                if (chrome.runtime.lastError) {}
+            });
+            sendResponse({ success: true });
+        }).catch(() => {
+            sendResponse({ success: false });
         });
+        return true;
     }
+    return false;
 });
 
 function getCurrentStatus() {
@@ -375,7 +431,9 @@ async function handleTimerFinished() {
                     target: 'offscreen',
                     type: 'PLAY_CHIME',
                     mode: 'focus'
-                }).catch(() => {});
+                }, () => {
+                    if (chrome.runtime.lastError) {}
+                });
             });
         }
 
@@ -400,7 +458,9 @@ async function handleTimerFinished() {
                     target: 'offscreen',
                     type: 'PLAY_CHIME',
                     mode: 'break'
-                }).catch(() => {});
+                }, () => {
+                    if (chrome.runtime.lastError) {}
+                });
             });
         }
 
@@ -611,7 +671,6 @@ async function setupOffscreenDocument() {
             reasons: ['AUDIO_PLAYBACK'],
             justification: 'Playing ambient soundscapes and meditation chimes for focus'
         });
-        // Give the offscreen document time to execute and register listeners
         await new Promise(resolve => setTimeout(resolve, 150));
     } catch (e) {
         console.error('Error setting up offscreen document:', e);

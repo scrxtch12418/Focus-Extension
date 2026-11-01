@@ -406,12 +406,17 @@ function broadcastAudioState() {
         isPlaying,
         soundscape: currentSoundscape,
         volume: currentVolume
-    }).catch(() => {});
+    }, () => {
+        const _ = chrome.runtime.lastError;
+    });
 }
 
 // Runtime message dispatcher
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.target !== 'offscreen') return;
+    if (message.target !== 'offscreen') {
+        if (typeof sendResponse === 'function') sendResponse({ received: true });
+        return false;
+    }
 
     if (message.type === 'PING') {
         sendResponse({ ready: true, isPlaying, soundscape: currentSoundscape });
@@ -440,7 +445,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type === 'GET_AUDIO_STATUS') {
         sendResponse({ isPlaying, soundscape: currentSoundscape, volume: currentVolume });
     }
+    return false;
 });
 
 // Notify background that offscreen is loaded and ready
-chrome.runtime.sendMessage({ type: 'OFFSCREEN_LOADED' }).catch(() => {});
+chrome.runtime.sendMessage({ type: 'OFFSCREEN_LOADED' }, () => {
+    const _ = chrome.runtime.lastError;
+});

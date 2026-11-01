@@ -1,12 +1,30 @@
 // Focus Command Center — Main Side Panel & Popup Controller
 
 // ============================================================================
+// Safe Background Message Sender (Prevents "message port closed" console errors)
+// ============================================================================
+function sendBgMessage(msg, callback) {
+    try {
+        chrome.runtime.sendMessage(msg, (response) => {
+            if (chrome.runtime.lastError) {
+                // Silently swallow disconnected port errors when service worker restarts
+                return;
+            }
+            if (typeof callback === 'function') {
+                callback(response);
+            }
+        });
+    } catch (e) {
+        // Context invalidated or extension reloading
+    }
+}
+
+// ============================================================================
 // 1. Lucide Icons Injection
 // ============================================================================
 function injectLucideIcons() {
     if (typeof getLucideSvg !== 'function') return;
 
-    // Header & Actions
     const brandIcon = document.getElementById('brandIcon');
     if (brandIcon) brandIcon.innerHTML = getLucideSvg('sparkles', 18);
 
@@ -16,7 +34,6 @@ function injectLucideIcons() {
     const popOutBtnIcon = document.getElementById('popOutBtnIcon');
     if (popOutBtnIcon) popOutBtnIcon.innerHTML = getLucideSvg('external-link', 16);
 
-    // Analytics Icons
     const streakIcon = document.getElementById('streakIcon');
     if (streakIcon) streakIcon.innerHTML = getLucideSvg('flame', 18);
 
@@ -26,7 +43,6 @@ function injectLucideIcons() {
     const interceptedIcon = document.getElementById('interceptedIcon');
     if (interceptedIcon) interceptedIcon.innerHTML = getLucideSvg('shield-alert', 18);
 
-    // Media Icons
     const discCenterIcon = document.getElementById('discCenterIcon');
     if (discCenterIcon) discCenterIcon.innerHTML = getLucideSvg('music', 18);
 
@@ -42,7 +58,6 @@ function injectLucideIcons() {
     const volumeIcon = document.getElementById('volumeIcon');
     if (volumeIcon) volumeIcon.innerHTML = getLucideSvg('volume-2', 15);
 
-    // Pomodoro Icons
     const targetGoalIcon = document.getElementById('targetGoalIcon');
     if (targetGoalIcon) targetGoalIcon.innerHTML = getLucideSvg('target', 14);
 
@@ -64,14 +79,12 @@ function injectLucideIcons() {
     const rulesSettingsIcon = document.getElementById('rulesSettingsIcon');
     if (rulesSettingsIcon) rulesSettingsIcon.innerHTML = getLucideSvg('sliders', 16);
 
-    // Tasks Icons
     const tasksHeaderIcon = document.getElementById('tasksHeaderIcon');
     if (tasksHeaderIcon) tasksHeaderIcon.innerHTML = getLucideSvg('list-todo', 18);
 
     const addTaskIcon = document.getElementById('addTaskIcon');
     if (addTaskIcon) addTaskIcon.innerHTML = getLucideSvg('plus', 18);
 
-    // Theme Modal Icons
     const themeModalHeaderIcon = document.getElementById('themeModalHeaderIcon');
     if (themeModalHeaderIcon) themeModalHeaderIcon.innerHTML = getLucideSvg('sparkles', 18);
 
@@ -105,7 +118,6 @@ const themeModal = document.getElementById('themeModal');
 const resetThemeBtn = document.getElementById('resetThemeBtn');
 const arcColorGrid = document.getElementById('arcColorGrid');
 const arcPickerHandle = document.getElementById('arcPickerHandle');
-const themePreviewChip = document.getElementById('themePreviewChip');
 const themeHslValue = document.getElementById('themeHslValue');
 const themeColorName = document.getElementById('themeColorName');
 const presetPills = document.querySelectorAll('.preset-pill');
@@ -138,10 +150,9 @@ function updateHandleFromCoords(x, y) {
     arcPickerHandle.style.left = `${clampedX}px`;
     arcPickerHandle.style.top = `${clampedY}px`;
 
-    // Calculate Hue (0 to 360) and Lightness/Saturation
     const h = Math.round(percentX * 360);
-    const s = Math.round(92 - (percentY * 22)); // 70% to 92%
-    const l = Math.round(72 - (percentY * 34)); // 38% to 72%
+    const s = Math.round(92 - (percentY * 22));
+    const l = Math.round(72 - (percentY * 34));
 
     applyTheme(h, s, l, true);
 }
@@ -228,7 +239,6 @@ if (resetThemeBtn) {
     });
 }
 
-// Load saved theme on startup
 chrome.storage.local.get(['customTheme'], (res) => {
     if (res.customTheme) {
         applyTheme(res.customTheme.h, res.customTheme.s, res.customTheme.l, false);
@@ -260,7 +270,7 @@ function updateAnalyticsUI(analytics) {
     if (todayIntercepted) todayIntercepted.textContent = analytics.todayShortsIntercepted || 0;
 }
 
-chrome.runtime.sendMessage({ type: 'GET_ANALYTICS' }, (res) => {
+sendBgMessage({ type: 'GET_ANALYTICS' }, (res) => {
     if (res) updateAnalyticsUI(res);
 });
 
@@ -296,7 +306,7 @@ function setMediaPlayingUI(playing, title, artist) {
 }
 
 function updateMediaUI() {
-    chrome.runtime.sendMessage({ type: 'GET_MEDIA_INFO' }, (info) => {
+    sendBgMessage({ type: 'GET_MEDIA_INFO' }, (info) => {
         if (!info) return;
         setMediaPlayingUI(info.isPlaying, info.title, info.artist);
         if (info.soundscape && soundscapeSelect) {
@@ -306,25 +316,24 @@ function updateMediaUI() {
     });
 }
 updateMediaUI();
-setInterval(updateMediaUI, 2500);
+setInterval(updateMediaUI, 3000);
 
 if (playPauseBtn) {
     playPauseBtn.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'playpause' });
-        // Immediate optimistic UI response
+        sendBgMessage({ type: 'MEDIA_COMMAND', action: 'playpause' });
         setMediaPlayingUI(!isMusicPlaying);
     });
 }
 
 if (nextBtn) {
     nextBtn.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'next' });
+        sendBgMessage({ type: 'MEDIA_COMMAND', action: 'next' });
     });
 }
 
 if (prevBtn) {
     prevBtn.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ type: 'MEDIA_COMMAND', action: 'prev' });
+        sendBgMessage({ type: 'MEDIA_COMMAND', action: 'prev' });
     });
 }
 
@@ -332,7 +341,7 @@ if (soundscapeSelect) {
     soundscapeSelect.addEventListener('change', (e) => {
         currentSoundscape = e.target.value;
         chrome.storage.local.set({ currentSoundscape });
-        chrome.runtime.sendMessage({
+        sendBgMessage({
             type: 'PLAY_SOUNDSCAPE',
             soundscape: currentSoundscape,
             volume: currentVolume
@@ -345,7 +354,7 @@ if (soundscapeVolume) {
     soundscapeVolume.addEventListener('input', (e) => {
         currentVolume = parseInt(e.target.value, 10) / 100;
         if (volumePercent) volumePercent.textContent = `${e.target.value}%`;
-        chrome.runtime.sendMessage({
+        sendBgMessage({
             type: 'SET_AMBIENT_VOLUME',
             volume: currentVolume
         });
@@ -409,7 +418,7 @@ function applyModeAndRunning(mode, isRunning) {
     }
 }
 
-chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
+sendBgMessage({ type: 'GET_STATUS' }, (response) => {
     if (response) {
         timeLeft = response.timeLeft;
         updateTimerDisplay();
@@ -425,11 +434,11 @@ chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
 
 if (startBtn) {
     startBtn.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
+        sendBgMessage({ type: 'GET_STATUS' }, (response) => {
             if (response && response.isRunning) {
-                chrome.runtime.sendMessage({ type: 'STOP_TIMER' });
+                sendBgMessage({ type: 'STOP_TIMER' });
             } else {
-                chrome.runtime.sendMessage({ type: 'START_TIMER' });
+                sendBgMessage({ type: 'START_TIMER' });
             }
         });
     });
@@ -440,7 +449,7 @@ if (incBtn) {
         if (!currentIsRunning && currentMode === 'focus') {
             timeLeft += 60;
             updateTimerDisplay();
-            chrome.runtime.sendMessage({ type: 'SET_TIME', time: timeLeft });
+            sendBgMessage({ type: 'SET_TIME', time: timeLeft });
         }
     });
 }
@@ -450,14 +459,14 @@ if (decBtn) {
         if (!currentIsRunning && currentMode === 'focus' && timeLeft >= 120) {
             timeLeft -= 60;
             updateTimerDisplay();
-            chrome.runtime.sendMessage({ type: 'SET_TIME', time: timeLeft });
+            sendBgMessage({ type: 'SET_TIME', time: timeLeft });
         }
     });
 }
 
 if (restartBtn) {
     restartBtn.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ type: 'RESET_TIMER' });
+        sendBgMessage({ type: 'RESET_TIMER' });
     });
 }
 
@@ -465,12 +474,12 @@ if (sessionTargetInput) {
     sessionTargetInput.addEventListener('change', () => {
         const target = Math.max(1, parseInt(sessionTargetInput.value, 10) || 1);
         sessionTargetInput.value = target;
-        chrome.runtime.sendMessage({ type: 'SET_SESSION_TARGET', target });
+        sendBgMessage({ type: 'SET_SESSION_TARGET', target });
         chrome.storage.local.set({ sessionTarget: target });
     });
 }
 
-// Runtime Listener
+// Runtime Listener for Broadcasts
 chrome.runtime.onMessage.addListener((message) => {
     if (message.type === 'TICK' || message.type === 'TIMER_FINISHED' || message.type === 'TIMER_RESET') {
         if (message.timeLeft !== undefined) {
@@ -496,6 +505,7 @@ chrome.runtime.onMessage.addListener((message) => {
             if (volumePercent) volumePercent.textContent = `${Math.round(message.volume * 100)}%`;
         }
     }
+    return false;
 });
 
 // ============================================================================
@@ -523,7 +533,7 @@ const blockedSitesArea = document.getElementById('blockedSites');
 
 function saveBlockSettings() {
     const sites = (blockedSitesArea?.value || '').split('\n');
-    chrome.runtime.sendMessage({
+    sendBgMessage({
         type: 'UPDATE_BLOCK_SETTINGS',
         blockAll: !!blockAllToggle?.checked,
         blockedSites: sites
@@ -691,7 +701,6 @@ function renderTasks() {
         const isActive = (task.id === activeTaskId && !task.completed);
         li.className = `todo-item ${task.completed ? 'completed' : ''} ${isActive ? 'active-focus' : ''}`;
 
-        // Pin button with Lucide star icon
         const pinBtn = document.createElement('button');
         pinBtn.type = 'button';
         pinBtn.className = `todo-pin-btn ${task.isPinned && !task.completed ? 'pinned' : ''}`;
@@ -702,7 +711,6 @@ function renderTasks() {
             togglePinTask(task.id);
         });
 
-        // Checkbox
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.className = 'todo-checkbox';
@@ -711,12 +719,10 @@ function renderTasks() {
             toggleTask(task.id);
         });
 
-        // Text
         const textSpan = document.createElement('span');
         textSpan.className = 'todo-text';
         textSpan.textContent = task.text;
 
-        // Delete button with Lucide trash-2 icon
         const delBtn = document.createElement('button');
         delBtn.type = 'button';
         delBtn.className = 'todo-delete-btn';

@@ -6,6 +6,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             window.location.reload();
         }
     }
+    if (typeof sendResponse === 'function') {
+        sendResponse({ received: true });
+    }
+    return false;
 });
 
 function activateZenReader() {
@@ -172,7 +176,9 @@ function activateZenReader() {
         if (currentVideoKey !== lastAlertedVideoKey) {
             sessionScrollCount++;
             lastAlertedVideoKey = currentVideoKey;
-            chrome.runtime.sendMessage({ type: 'RECORD_INTERCEPTION' }).catch(() => {});
+            chrome.runtime.sendMessage({ type: 'RECORD_INTERCEPTION' }, () => {
+                const _ = chrome.runtime.lastError;
+            });
             showMindfulOverlay(info.platform);
         }
     }

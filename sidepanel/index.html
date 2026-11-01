@@ -42,20 +42,10 @@
             </div>
         </header>
 
-        <!-- Decluttering Area Switcher (Focus on One Card Area with Ample Breathing Space) -->
-        <nav class="retro-nav-bar" id="retroNavBar">
-            <button class="retro-nav-tab active" data-area="all">★ ALL APPS</button>
-            <button class="retro-nav-tab" data-area="focus">⏱ FOCUS</button>
-            <button class="retro-nav-tab" data-area="media">🎵 MEDIA</button>
-            <button class="retro-nav-tab" data-area="tasks">📝 TASKS</button>
-            <button class="retro-nav-tab" data-area="stats">📊 STATS</button>
-            <button class="retro-nav-tab" data-area="rules">⚙ RULES</button>
-        </nav>
-
-        <!-- Edge-to-Edge Clean Cards Grid -->
+        <!-- Single Unified Organized Cards Grid -->
         <main class="retro-grid">
-            <!-- 1. Dedicated YouTube & Spotify Player (with Live Thumbnail & Video Scrub Slider) -->
-            <section class="retro-card" id="mediaCard" data-card-area="media">
+            <!-- 1. Dedicated YouTube & Spotify Player (Live Thumbnail & Video Scrub Slider) -->
+            <section class="retro-card" id="mediaCard">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="spotifyHeaderIcon"></span>
@@ -103,7 +93,7 @@
             </section>
 
             <!-- 2. Dedicated Ambient Soundscapes Card (Built-in Audio Station with Play/Pause) -->
-            <section class="retro-card" id="ambientCard" data-card-area="media focus">
+            <section class="retro-card" id="ambientCard">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="ambientHeaderIcon"></span>
@@ -128,12 +118,12 @@
 
                     <div class="ambient-controls-row">
                         <select id="soundscapeSelect" class="retro-select" title="Focus Soundscape">
-                            <option value="lofi">📻 Lofi Chill Radio</option>
-                            <option value="rain">🌧️ Rain & Thunder Storm</option>
-                            <option value="noise">🌊 Deep Brown Noise</option>
-                            <option value="ocean">🏄 Ocean Waves</option>
-                            <option value="cafe">☕ Cozy Café Ambience</option>
-                            <option value="binaural">🧠 40Hz Gamma Focus</option>
+                            <option value="lofi">Lofi Chill Radio</option>
+                            <option value="rain">Rain &amp; Thunder Storm</option>
+                            <option value="noise">Deep Brown Noise</option>
+                            <option value="ocean">Ocean Waves</option>
+                            <option value="cafe">Cozy Cafe Ambience</option>
+                            <option value="binaural">40Hz Gamma Focus</option>
                         </select>
                         <div class="ambient-volume-group">
                             <span id="volumeIcon"></span>
@@ -145,7 +135,7 @@
             </section>
 
             <!-- 3. Pomodoro Focus Timer -->
-            <section class="retro-card" id="timerCard" data-card-area="focus">
+            <section class="retro-card" id="timerCard">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="timerHeaderIcon"></span>
@@ -195,7 +185,7 @@
             </section>
 
             <!-- 4. Focus Tasks & Goals Card -->
-            <section class="retro-card" id="tasksCard" data-card-area="tasks">
+            <section class="retro-card" id="tasksCard">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="tasksHeaderIcon"></span>
@@ -231,7 +221,7 @@
             </section>
 
             <!-- 5. Daily Analytics & Focus Streaks -->
-            <section class="retro-card span-2" id="analyticsCard" data-card-area="stats">
+            <section class="retro-card" id="analyticsCard">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="analyticsHeaderIcon"></span>
@@ -271,7 +261,7 @@
             </section>
 
             <!-- 6. Focus Rules & Doomscroll Interceptor Card -->
-            <section class="retro-card span-2" id="rulesCard" data-card-area="rules">
+            <section class="retro-card" id="rulesCard">
                 <div class="card-retro-header">
                     <div class="card-title-left">
                         <span id="rulesHeaderIcon"></span>
@@ -334,7 +324,7 @@
                         </div>
 
                         <div class="shortcuts-table">
-                            <div style="font-weight: 800; font-size: 0.72rem; margin-bottom: 2px;">⚡ Global Shortcuts</div>
+                            <div style="font-weight: 800; font-size: 0.72rem; margin-bottom: 2px;">Global Shortcuts</div>
                             <div class="shortcut-row"><span>Start/Pause Timer</span><kbd>Alt+Shift+F</kbd></div>
                             <div class="shortcut-row"><span>Toggle Ambient Audio</span><kbd>Alt+Shift+M</kbd></div>
                             <div class="shortcut-row"><span>Clean Article Reader</span><kbd>Alt+Shift+Z</kbd></div>
@@ -355,7 +345,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <button id="closeThemeBtn" class="btn-retro-mini" title="Close Theme Selector">
-                        <span id="closeThemeIcon"></span> [✕]
+                        <span id="closeThemeIcon"></span> Close
                     </button>
                     <div class="retro-dots">
                         <span class="retro-dot"></span>
@@ -373,7 +363,7 @@
                 <div class="theme-card-option" data-theme="sage">
                     <div class="theme-card-header">
                         <span class="theme-name">Pixel Pastel (Sage)</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #9ec5be;" title="Sky Canvas"></div>
@@ -387,7 +377,7 @@
                 <div class="theme-card-option" data-theme="mocha">
                     <div class="theme-card-header">
                         <span class="theme-name">Catppuccin Mocha</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #1e1e2e;" title="Canvas"></div>
@@ -401,7 +391,7 @@
                 <div class="theme-card-option" data-theme="latte">
                     <div class="theme-card-header">
                         <span class="theme-name">Catppuccin Latte</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #eff1f5;" title="Canvas"></div>
@@ -415,7 +405,7 @@
                 <div class="theme-card-option" data-theme="dracula">
                     <div class="theme-card-header">
                         <span class="theme-name">Dracula</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #282a36;" title="Canvas"></div>
@@ -429,7 +419,7 @@
                 <div class="theme-card-option" data-theme="nord">
                     <div class="theme-card-header">
                         <span class="theme-name">Nord Arctic</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #2e3440;" title="Canvas"></div>
@@ -443,7 +433,7 @@
                 <div class="theme-card-option" data-theme="rosepine">
                     <div class="theme-card-header">
                         <span class="theme-name">Rosé Pine</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #191724;" title="Canvas"></div>
@@ -457,7 +447,7 @@
                 <div class="theme-card-option" data-theme="tokyonight">
                     <div class="theme-card-header">
                         <span class="theme-name">Tokyo Night</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #1a1b26;" title="Canvas"></div>
@@ -471,7 +461,7 @@
                 <div class="theme-card-option" data-theme="amber">
                     <div class="theme-card-header">
                         <span class="theme-name">Cyber Amber (CRT)</span>
-                        <span class="theme-active-tag">✓ ACTIVE</span>
+                        <span class="theme-active-tag">ACTIVE</span>
                     </div>
                     <div class="theme-palette-preview">
                         <div class="theme-chip" style="background: #0a0802;" title="Canvas"></div>

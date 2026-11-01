@@ -1,5 +1,5 @@
 // Focus Command Center — Main Controller (Retro Desktop OS Aesthetic)
-// Spacious, Decluttered, Dedicated Cards per Area
+// Spacious, Decluttered, Single Unified Layout with Crystal Clear Typography & Zero Emojis
 
 // ============================================================================
 // Safe Background Message Sender (Prevents "message port closed" console errors)
@@ -22,7 +22,7 @@ function sendBgMessage(msg, callback) {
 }
 
 // ============================================================================
-// 1. Lucide Icons Injection
+// 1. Lucide Icons Injection (Zero Emojis, Crisp Vector Glyphs)
 // ============================================================================
 function injectLucideIcons() {
     if (typeof getLucideSvg !== 'function') return;
@@ -121,30 +121,7 @@ if (popOutBtn) {
 }
 
 // ============================================================================
-// 2. Area Navigation Switcher (Decluttering: 1 Card Area View or All)
-// ============================================================================
-const navTabs = document.querySelectorAll('.retro-nav-tab');
-const allCards = document.querySelectorAll('.retro-card');
-
-navTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        navTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        const selectedArea = tab.dataset.area;
-        allCards.forEach(card => {
-            const cardAreas = (card.dataset.cardArea || '').split(' ');
-            if (selectedArea === 'all' || cardAreas.includes(selectedArea)) {
-                card.classList.remove('hidden-card');
-            } else {
-                card.classList.add('hidden-card');
-            }
-        });
-    });
-});
-
-// ============================================================================
-// 3. Retro Theme Selector Engine (Catppuccin, Dracula, Nord, Sage, etc.)
+// 2. Retro Theme Selector Engine (Sage, Catppuccin, Dracula, Nord, etc.)
 // ============================================================================
 const openThemeBtn = document.getElementById('openThemeBtn');
 const closeThemeBtn = document.getElementById('closeThemeBtn');
@@ -202,7 +179,7 @@ chrome.storage.local.get(['retroTheme'], (res) => {
 });
 
 // ============================================================================
-// 4. YouTube & Spotify Player with Live Video Seek Slider & Thumbnail
+// 3. YouTube & Spotify Player with Live Video Seek Slider & Thumbnail
 // ============================================================================
 const trackTitle = document.getElementById('trackTitle');
 const trackArtist = document.getElementById('trackArtist');
@@ -332,7 +309,7 @@ if (prevBtn) {
 }
 
 // ============================================================================
-// 5. Dedicated Ambient Soundscapes (Built-in Audio Station with Play/Pause)
+// 4. Dedicated Ambient Soundscapes (Built-in Audio Station with Play/Pause)
 // ============================================================================
 const ambientStationTitle = document.getElementById('ambientStationTitle');
 const ambientPlayPauseBtn = document.getElementById('ambientPlayPauseBtn');
@@ -347,7 +324,7 @@ const SOUNDSCAPE_NAMES = {
     'rain': 'Rain & Thunder Storm',
     'noise': 'Deep Brown Noise',
     'ocean': 'Ocean Waves',
-    'cafe': 'Cozy Café Ambience',
+    'cafe': 'Cozy Cafe Ambience',
     'binaural': '40Hz Gamma Focus'
 };
 
@@ -418,7 +395,7 @@ chrome.storage.local.get(['ambientPlaying', 'currentSoundscape', 'ambientVolume'
 });
 
 // ============================================================================
-// 6. Pomodoro Focus Timer Logic
+// 5. Pomodoro Focus Timer Logic
 // ============================================================================
 let timeLeft = 25 * 60;
 let currentMode = 'focus';
@@ -558,7 +535,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // ============================================================================
-// 7. Focus Tasks & Goals Logic
+// 6. Focus Tasks & Goals Logic
 // ============================================================================
 let tasks = [];
 let activeTaskId = null;
@@ -597,7 +574,6 @@ function getActiveTask() {
 
 function renderActiveFocus() {
     let activeTask = getActiveTask();
-
     if (!activeTask) {
         const candidate = tasks.find(t => t.isPinned && !t.completed) || tasks.find(t => !t.completed);
         if (candidate) {
@@ -612,7 +588,7 @@ function renderActiveFocus() {
         if (activeFocusText) activeFocusText.textContent = activeTask.text;
         if (quickCompleteTaskBtn) quickCompleteTaskBtn.style.display = 'inline-flex';
     } else {
-        if (activeFocusText) activeFocusText.textContent = tasks.length === 0 ? 'No active task set' : 'All tasks completed! ★';
+        if (activeFocusText) activeFocusText.textContent = tasks.length === 0 ? 'No active task set' : 'All tasks completed!';
         if (quickCompleteTaskBtn) quickCompleteTaskBtn.style.display = 'none';
     }
 }
@@ -637,7 +613,7 @@ function renderTasks() {
         if (currentFilter === 'completed') {
             empty.textContent = 'No completed tasks yet.';
         } else if (currentFilter === 'active') {
-            empty.textContent = tasks.length > 0 ? 'All caught up! Nice work. ★' : 'No tasks yet. Add one above!';
+            empty.textContent = tasks.length > 0 ? 'All caught up! Nice work.' : 'No tasks yet. Add one above!';
         } else {
             empty.textContent = 'No tasks yet. Add your first goal above!';
         }
@@ -792,7 +768,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 
 // ============================================================================
-// 8. Daily Analytics & Streaks UI
+// 7. Daily Analytics & Streaks UI
 // ============================================================================
 const streakCount = document.getElementById('streakCount');
 const todayFocusTime = document.getElementById('todayFocusTime');
@@ -830,7 +806,7 @@ sendBgMessage({ type: 'GET_ANALYTICS' }, (res) => {
 });
 
 // ============================================================================
-// 9. Focus Rules & Settings Logic
+// 8. Focus Rules & Settings Logic
 // ============================================================================
 const blockAllToggle = document.getElementById('blockAll');
 const blockedSitesArea = document.getElementById('blockedSites');

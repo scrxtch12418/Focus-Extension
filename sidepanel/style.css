@@ -1,34 +1,34 @@
-/* Focus Command Center — Retro Desktop OS & Pixel Art Aesthetic */
-/* Inspired by Janhvi's Portfolio.exe */
+/* Focus Command Center — Clean Retro Desktop OS Aesthetic */
+/* High Clarity Typography, Clear Layout, Zero Emojis */
 
 :root,
 [data-theme="sage"] {
     --bg-canvas: #9ec5be;
     --bg-canvas-top: #aedbd1;
     --bg-canvas-bottom: #8fbab3;
-    --window-border: #1a3236;
+    --window-border: #14282b;
     --window-header-bg: #ffffff;
     --card-bg: #ffffff;
     --card-header-bg: #ffffff;
-    --card-border: #1a3236;
-    --border-color: #1a3236;
-    --border-subtle: #4d7277;
-    --text-main: #14282b;
-    --text-muted: #4a6a6f;
-    --accent: #23484e;
-    --accent-hover: #14282b;
-    --accent-subtle: #d8f1ec;
-    --accent-pill: #c3e8e0;
-    --accent-pill-fill: #5fa59b;
+    --card-border: #14282b;
+    --border-color: #14282b;
+    --border-subtle: #3a5c61;
+    --text-main: #0c1c1e;
+    --text-muted: #2f4e53;
+    --accent: #1e3f44;
+    --accent-hover: #0c1c1e;
+    --accent-subtle: #d3ede7;
+    --accent-pill: #bee5dc;
+    --accent-pill-fill: #4e948a;
     --btn-bg: #ffffff;
     --btn-hover: #d8f1ec;
-    --retro-shadow: 2px 2px 0px #1a3236;
-    --card-shadow: 3px 3px 0px #1a3236;
+    --retro-shadow: 2px 2px 0px #14282b;
+    --card-shadow: 3px 3px 0px #14282b;
     --inset-bg: #edf8f5;
     --cloud-color: #ffffff;
     --mountain-color: #8cb7af;
-    --danger: #d9534f;
-    --success: #388e3c;
+    --danger: #c9302c;
+    --success: #2e7d32;
 }
 
 [data-theme="mocha"] {
@@ -41,12 +41,12 @@
     --card-header-bg: #313244;
     --card-border: #cba6f7;
     --border-color: #cba6f7;
-    --border-subtle: #6c7086;
+    --border-subtle: #7f849c;
     --text-main: #cdd6f4;
     --text-muted: #a6adc8;
     --accent: #cba6f7;
     --accent-hover: #b4befe;
-    --accent-subtle: rgba(203, 166, 247, 0.15);
+    --accent-subtle: rgba(203, 166, 247, 0.18);
     --accent-pill: #45475a;
     --accent-pill-fill: #cba6f7;
     --btn-bg: #45475a;
@@ -64,15 +64,15 @@
     --bg-canvas: #dce0e8;
     --bg-canvas-top: #e6e9ef;
     --bg-canvas-bottom: #ccd0da;
-    --window-border: #4c4f69;
+    --window-border: #3b3d54;
     --window-header-bg: #ffffff;
     --card-bg: #ffffff;
     --card-header-bg: #ffffff;
-    --card-border: #4c4f69;
-    --border-color: #4c4f69;
-    --border-subtle: #8c8fa1;
-    --text-main: #4c4f69;
-    --text-muted: #6c6f85;
+    --card-border: #3b3d54;
+    --border-color: #3b3d54;
+    --border-subtle: #7c7f93;
+    --text-main: #2b2c3d;
+    --text-muted: #5c5f77;
     --accent: #7287fd;
     --accent-hover: #1e66f5;
     --accent-subtle: #e8ecfc;
@@ -80,8 +80,8 @@
     --accent-pill-fill: #7287fd;
     --btn-bg: #ffffff;
     --btn-hover: #e8ecfc;
-    --retro-shadow: 2px 2px 0px #4c4f69;
-    --card-shadow: 3px 3px 0px #4c4f69;
+    --retro-shadow: 2px 2px 0px #3b3d54;
+    --card-shadow: 3px 3px 0px #3b3d54;
     --inset-bg: #eff1f5;
     --cloud-color: #ffffff;
     --mountain-color: #bcc0cc;
@@ -99,12 +99,12 @@
     --card-header-bg: #343746;
     --card-border: #bd93f9;
     --border-color: #bd93f9;
-    --border-subtle: #6272a4;
+    --border-subtle: #7a8cb9;
     --text-main: #f8f8f2;
-    --text-muted: #bd93f9;
+    --text-muted: #d0bfff;
     --accent: #ff79c6;
     --accent-hover: #ff92d0;
-    --accent-subtle: rgba(255, 121, 198, 0.18);
+    --accent-subtle: rgba(255, 121, 198, 0.2);
     --accent-pill: #44475a;
     --accent-pill-fill: #50fa7b;
     --btn-bg: #44475a;
@@ -128,12 +128,12 @@
     --card-header-bg: #3b4252;
     --card-border: #88c0d0;
     --border-color: #88c0d0;
-    --border-subtle: #4c566a;
+    --border-subtle: #616e88;
     --text-main: #eceff4;
     --text-muted: #d8dee9;
     --accent: #88c0d0;
     --accent-hover: #81a1c1;
-    --accent-subtle: rgba(136, 192, 208, 0.18);
+    --accent-subtle: rgba(136, 192, 208, 0.2);
     --accent-pill: #434c5e;
     --accent-pill-fill: #a3be8c;
     --btn-bg: #434c5e;
@@ -157,12 +157,12 @@
     --card-header-bg: #26233a;
     --card-border: #eb6f92;
     --border-color: #eb6f92;
-    --border-subtle: #6e6a86;
+    --border-subtle: #847f9f;
     --text-main: #e0def4;
-    --text-muted: #908caa;
+    --text-muted: #b5b2cf;
     --accent: #c4a7e7;
     --accent-hover: #ebbcba;
-    --accent-subtle: rgba(196, 167, 231, 0.18);
+    --accent-subtle: rgba(196, 167, 231, 0.2);
     --accent-pill: #2a283e;
     --accent-pill-fill: #f6c177;
     --btn-bg: #2a283e;
@@ -186,12 +186,12 @@
     --card-header-bg: #24283b;
     --card-border: #7dcfff;
     --border-color: #7dcfff;
-    --border-subtle: #565f89;
+    --border-subtle: #6e79a8;
     --text-main: #c0caf5;
-    --text-muted: #7aa2f7;
+    --text-muted: #9aa5ce;
     --accent: #bb9af7;
     --accent-hover: #9d7cd8;
-    --accent-subtle: rgba(187, 154, 247, 0.18);
+    --accent-subtle: rgba(187, 154, 247, 0.2);
     --accent-pill: #2f3549;
     --accent-pill-fill: #73daca;
     --btn-bg: #2f3549;
@@ -215,12 +215,12 @@
     --card-header-bg: #1c1507;
     --card-border: #ffb000;
     --border-color: #ffb000;
-    --border-subtle: #8a6000;
+    --border-subtle: #b37c00;
     --text-main: #ffcf56;
-    --text-muted: #e69900;
+    --text-muted: #ffc033;
     --accent: #ffb000;
     --accent-hover: #ffd470;
-    --accent-subtle: rgba(255, 176, 0, 0.18);
+    --accent-subtle: rgba(255, 176, 0, 0.2);
     --accent-pill: #291e08;
     --accent-pill-fill: #ffb000;
     --btn-bg: #291e08;
@@ -230,17 +230,19 @@
     --inset-bg: #140e05;
     --cloud-color: #291e08;
     --mountain-color: #0d0a03;
-    --danger: #ff4d4d;
+    --danger: #ff5252;
     --success: #ffb000;
 }
 
 /* ==========================================================================
-   Global Reset & Monospaced Font
+   Global Reset & Crystal Clear Typography (Inter / Modern Sans)
    ========================================================================== */
 * {
     box-sizing: border-box;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Adwaita Mono', 'Courier New', monospace;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 body {
@@ -254,8 +256,23 @@ body {
     overflow-x: hidden;
     transition: background 0.25s ease, color 0.25s ease;
     position: relative;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
+/* Tabular Monospaced Numbers for Digits, Timers, and Meters */
+.timer-digits,
+.stat-value,
+.volume-readout,
+.seek-slider-container span,
+.spotify-progress-row span,
+kbd,
+.session-target-input {
+    font-family: 'SF Mono', 'Segoe UI Mono', 'Roboto Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace !important;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Lucide Vector Icons Standard */
 svg.lucide {
     display: inline-block;
     vertical-align: middle;
@@ -350,7 +367,7 @@ svg.lucide {
     align-items: center;
     gap: 8px;
     font-weight: 800;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     letter-spacing: 0.6px;
     color: var(--text-main);
     text-transform: uppercase;
@@ -374,7 +391,7 @@ svg.lucide {
     color: var(--text-main);
     border-radius: 6px;
     padding: 5px 12px;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 800;
     display: inline-flex;
     align-items: center;
@@ -401,54 +418,7 @@ svg.lucide {
 }
 
 /* ==========================================================================
-   Decluttering Applet Navigation Bar (Clean Breathing Room Tabs)
-   ========================================================================== */
-.retro-nav-bar {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    box-sizing: border-box;
-}
-
-.retro-nav-tab {
-    flex: 1;
-    min-width: fit-content;
-    background: var(--btn-bg);
-    border: 1.5px solid var(--border-color);
-    border-radius: 6px;
-    padding: 7px 14px;
-    font-size: 0.74rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: var(--text-muted);
-    cursor: pointer;
-    box-shadow: 1.5px 1.5px 0px var(--retro-shadow);
-    transition: all 0.1s ease;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.retro-nav-tab:hover {
-    background: var(--accent-subtle);
-    color: var(--text-main);
-}
-
-.retro-nav-tab.active {
-    background: var(--accent);
-    color: #ffffff;
-    border-color: var(--border-color);
-}
-
-.retro-nav-tab:active {
-    transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px;
-}
-
-/* ==========================================================================
-   Spacious Retro Cards Grid (Ample Breathing Room)
+   Clean Balanced Grid (Single Organized Section)
    ========================================================================== */
 .retro-grid {
     display: grid;
@@ -458,17 +428,14 @@ svg.lucide {
     box-sizing: border-box;
 }
 
-@media (min-width: 680px) {
+@media (min-width: 660px) {
     .retro-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-    }
-    .span-2 {
-        grid-column: 1 / -1;
+        gap: 16px;
     }
 }
 
-/* Card Shell */
+/* Retro Card Architecture */
 .retro-card {
     background: var(--card-bg);
     border: 1.5px solid var(--border-color);
@@ -478,17 +445,12 @@ svg.lucide {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.retro-card.hidden-card {
-    display: none !important;
 }
 
 .card-retro-header {
     background: var(--card-header-bg);
     border-bottom: 1.5px solid var(--border-color);
-    padding: 8px 14px;
+    padding: 9px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -498,7 +460,7 @@ svg.lucide {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 800;
     letter-spacing: 0.4px;
     text-transform: uppercase;
@@ -527,7 +489,7 @@ svg.lucide {
 }
 
 /* ==========================================================================
-   1. YouTube & Spotify Player with Live Video Seek Slider & Thumbnail
+   1. YouTube & Spotify Player (Thumbnail + Live Video Scrub Slider)
    ========================================================================== */
 .media-player-row {
     display: flex;
@@ -569,22 +531,22 @@ svg.lucide {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
 }
 
 .track-title {
-    font-size: 0.96rem;
+    font-size: 0.98rem;
     font-weight: 800;
     color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.25;
 }
 
 .track-artist {
-    font-size: 0.74rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -594,7 +556,7 @@ svg.lucide {
 .media-platform-badge {
     display: inline-block;
     align-self: flex-start;
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
     background: var(--accent-subtle);
@@ -605,12 +567,12 @@ svg.lucide {
     margin-top: 4px;
 }
 
-/* Interactive Video Seek Slider */
+/* Interactive Video Scrub Slider */
 .seek-slider-container {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     font-weight: 700;
     color: var(--text-muted);
 }
@@ -638,7 +600,7 @@ svg.lucide {
     box-shadow: 1px 1px 0px var(--retro-shadow);
 }
 
-/* Media Transport Controls */
+/* Transport Controls */
 .media-controls-row {
     display: flex;
     justify-content: center;
@@ -678,7 +640,7 @@ svg.lucide {
 }
 
 /* ==========================================================================
-   2. Dedicated Ambient Soundscapes Card (Built-in Audio with Play/Pause)
+   2. Dedicated Ambient Soundscapes Card (Built-in Audio Station)
    ========================================================================== */
 .ambient-header-row {
     display: flex;
@@ -693,13 +655,13 @@ svg.lucide {
 }
 
 .ambient-station-name {
-    font-size: 0.92rem;
+    font-size: 0.94rem;
     font-weight: 800;
     color: var(--text-main);
 }
 
 .ambient-station-sub {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     color: var(--text-muted);
 }
 
@@ -709,7 +671,7 @@ svg.lucide {
     color: var(--text-main);
     border-radius: 6px;
     padding: 8px 14px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 800;
     display: inline-flex;
     align-items: center;
@@ -746,7 +708,7 @@ svg.lucide {
     color: var(--text-main);
     border-radius: 6px;
     padding: 7px 10px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     box-shadow: 1px 1px 0px var(--retro-shadow);
     cursor: pointer;
@@ -782,7 +744,7 @@ svg.lucide {
 }
 
 .volume-readout {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     min-width: 30px;
     text-align: right;
@@ -810,7 +772,7 @@ svg.lucide {
 }
 
 .active-goal-tag {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -818,7 +780,7 @@ svg.lucide {
 }
 
 .active-goal-text {
-    font-size: 0.84rem;
+    font-size: 0.86rem;
     font-weight: 800;
     color: var(--text-main);
     white-space: nowrap;
@@ -831,7 +793,7 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     border-radius: 4px;
     padding: 4px 9px;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 800;
     cursor: pointer;
     box-shadow: 1px 1px 0px var(--retro-shadow);
@@ -949,7 +911,7 @@ svg.lucide {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
@@ -959,7 +921,7 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     border-radius: 4px;
     padding: 4px 6px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-align: center;
     color: var(--text-main);
@@ -979,7 +941,7 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
     padding: 9px 12px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: var(--text-main);
     box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
@@ -995,7 +957,7 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
     padding: 0 14px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 800;
     color: var(--text-main);
     cursor: pointer;
@@ -1022,7 +984,7 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     border-radius: 4px;
     padding: 5px;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 800;
     text-transform: uppercase;
     cursor: pointer;
@@ -1099,7 +1061,7 @@ svg.lucide {
 
 .todo-text {
     flex: 1;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: var(--text-main);
     white-space: nowrap;
@@ -1123,7 +1085,7 @@ svg.lucide {
 
 .todo-empty {
     text-align: center;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
     padding: 16px 4px;
 }
@@ -1157,17 +1119,17 @@ svg.lucide {
 }
 
 .stat-value {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: var(--text-main);
     line-height: 1.1;
 }
 
 .stat-label {
-    font-size: 0.66rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.4px;
     font-weight: 700;
 }
 
@@ -1176,7 +1138,7 @@ svg.lucide {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
@@ -1220,13 +1182,13 @@ svg.lucide {
 }
 
 .rule-title {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 800;
     color: var(--text-main);
 }
 
 .rule-desc {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
 }
 
@@ -1272,7 +1234,7 @@ svg.lucide {
     border: 1.5px solid var(--border-color);
     border-radius: 6px;
     padding: 7px 10px;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-main);
     resize: vertical;
@@ -1288,7 +1250,7 @@ svg.lucide {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
 }
 
 .shortcut-row {
@@ -1302,7 +1264,7 @@ kbd {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 2px 6px;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 800;
     box-shadow: 1px 1px 0px var(--retro-shadow);
 }
@@ -1378,13 +1340,13 @@ kbd {
 }
 
 .theme-name {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 800;
     color: var(--text-main);
 }
 
 .theme-active-tag {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 800;
     color: var(--accent);
     display: none;

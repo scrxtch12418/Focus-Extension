@@ -430,7 +430,7 @@ async function handleTimerFinished() {
         chrome.notifications.create({
             type: 'basic',
             iconUrl: 'icons/icon-128.png',
-            title: reachedTarget ? '🎯 Daily Goal Reached!' : '⏰ Focus Session Complete!',
+            title: reachedTarget ? 'Daily Goal Reached!' : 'Focus Session Complete!',
             message: reachedTarget
                 ? `Fantastic job! You completed all ${timerState.sessionTarget} focus sessions!`
                 : `Great focus! Time for a 5-minute break. (Session ${timerState.completedSessions}/${timerState.sessionTarget})`
@@ -461,7 +461,7 @@ async function handleTimerFinished() {
         chrome.notifications.create({
             type: 'basic',
             iconUrl: 'icons/icon-128.png',
-            title: '☕ Break Over!',
+            title: 'Break Over!',
             message: 'Ready to shift gears and dive back into focus?'
         });
 

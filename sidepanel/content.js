@@ -237,19 +237,18 @@ function activateZenReader() {
         shadow.innerHTML = `
             <style>
                 .pill {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    background: rgba(24, 24, 37, 0.9);
-                    color: ${isLow ? '#f38ba8' : '#a6e3a1'};
-                    border: 1px solid ${isLow ? 'rgba(243, 139, 168, 0.5)' : 'rgba(166, 227, 161, 0.4)'};
-                    backdrop-filter: blur(8px);
-                    padding: 6px 14px;
-                    border-radius: 9999px;
-                    font-size: 0.8rem;
-                    font-weight: 700;
+                    font-family: 'JetBrains Mono', 'Fira Code', 'Adwaita Mono', monospace;
+                    background: #ffffff;
+                    color: ${isLow ? '#d9534f' : '#1a3236'};
+                    border: 1.5px solid #1a3236;
+                    padding: 5px 12px;
+                    border-radius: 6px;
+                    font-size: 0.76rem;
+                    font-weight: 800;
                     display: flex;
                     align-items: center;
                     gap: 6px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+                    box-shadow: 2px 2px 0px #1a3236;
                     pointer-events: none;
                 }
             </style>
@@ -315,27 +314,29 @@ function activateZenReader() {
         const shadow = overlayHost.shadowRoot || overlayHost.attachShadow({ mode: 'open' });
         shadow.innerHTML = `
             <style>
-                * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+                * { box-sizing: border-box; font-family: 'JetBrains Mono', 'Fira Code', 'Adwaita Mono', monospace; }
                 .backdrop {
                     position: fixed; inset: 0; width: 100vw; height: 100vh;
-                    background: rgba(17, 17, 27, 0.88); backdrop-filter: blur(16px);
+                    background: rgba(158, 197, 190, 0.85); backdrop-filter: blur(8px);
                     display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 2147483647;
                 }
                 .modal {
-                    background: linear-gradient(145deg, #1e1e2e, #181825);
-                    border: 2px solid rgba(243, 139, 168, 0.6);
-                    border-radius: 20px; width: 100%; max-width: 440px; padding: 30px 24px;
-                    color: #cdd6f4; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+                    background: #ffffff;
+                    border: 2px solid #1a3236;
+                    border-radius: 8px; width: 100%; max-width: 440px; padding: 24px 20px;
+                    color: #14282b; text-align: center; box-shadow: 4px 4px 0px #1a3236;
                 }
-                .badge-icon { margin-bottom: 12px; display: inline-flex; color: #f38ba8; }
-                h2 { margin: 0 0 8px 0; font-size: 1.5rem; font-weight: 800; color: #f38ba8; }
-                p.sub { margin: 0 0 20px 0; font-size: 0.95rem; color: #a6adc8; line-height: 1.4; }
+                .badge-icon { margin-bottom: 10px; display: inline-flex; color: #d9534f; }
+                h2 { margin: 0 0 8px 0; font-size: 1.25rem; font-weight: 800; color: #1a3236; text-transform: uppercase; }
+                p.sub { margin: 0 0 18px 0; font-size: 0.85rem; color: #4a6a6f; line-height: 1.4; font-weight: 600; }
                 .btn {
-                    border: none; border-radius: 12px; padding: 14px 18px; font-size: 0.92rem; font-weight: 700;
+                    border: 1.5px solid #1a3236; border-radius: 6px; padding: 10px 16px; font-size: 0.82rem; font-weight: 800;
                     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+                    box-shadow: 2px 2px 0px #1a3236; transition: all 0.1s;
                 }
-                .btn-primary { background: #a6e3a1; color: #11111b; margin-bottom: 10px; }
-                .btn-secondary { background: rgba(49, 50, 68, 0.8); color: #cdd6f4; border: 1px solid rgba(255, 255, 255, 0.12); }
+                .btn:active { transform: translate(1px, 1px); box-shadow: 0px 0px 0px; }
+                .btn-primary { background: #5fa59b; color: #ffffff; margin-bottom: 8px; }
+                .btn-secondary { background: #edf8f5; color: #1a3236; }
             </style>
             <div class="backdrop">
                 <div class="modal">
@@ -380,63 +381,57 @@ function activateZenReader() {
             <style>
                 * {
                     box-sizing: border-box;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    font-family: 'JetBrains Mono', 'Fira Code', 'Adwaita Mono', monospace;
                 }
                 .backdrop {
                     position: fixed; inset: 0; width: 100vw; height: 100vh;
-                    background: rgba(17, 17, 27, 0.78); backdrop-filter: blur(14px);
-                    -webkit-backdrop-filter: blur(14px); display: flex; align-items: center; justify-content: center;
-                    padding: 20px; z-index: 2147483647; animation: fadeIn 0.25s ease-out;
+                    background: rgba(158, 197, 190, 0.82); backdrop-filter: blur(8px);
+                    display: flex; align-items: center; justify-content: center;
+                    padding: 20px; z-index: 2147483647; animation: fadeIn 0.2s ease-out;
                 }
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                @keyframes scaleUp { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                @keyframes pulseGlow {
-                    0%, 100% { box-shadow: 0 0 20px rgba(203, 166, 247, 0.2); }
-                    50% { box-shadow: 0 0 35px rgba(203, 166, 247, 0.45); }
-                }
                 .modal {
-                    background: linear-gradient(145deg, #1e1e2e, #181825);
-                    border: 1px solid rgba(203, 166, 247, 0.35); border-radius: 20px;
-                    width: 100%; max-width: 440px; padding: 28px 24px; color: #cdd6f4;
-                    text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-                    animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1), pulseGlow 4s infinite ease-in-out;
+                    background: #ffffff;
+                    border: 2px solid #1a3236; border-radius: 8px;
+                    width: 100%; max-width: 440px; padding: 24px 20px; color: #14282b;
+                    text-align: center; box-shadow: 4px 4px 0px #1a3236;
                 }
-                .badge-icon { margin-bottom: 12px; display: inline-flex; color: #f38ba8; }
-                h2 { margin: 0 0 6px 0; font-size: 1.5rem; font-weight: 800; color: #cba6f7; letter-spacing: -0.3px; }
-                p.sub { margin: 0 0 16px 0; font-size: 0.95rem; color: #a6adc8; line-height: 1.4; }
+                .badge-icon { margin-bottom: 10px; display: inline-flex; color: #1a3236; }
+                h2 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 800; color: #1a3236; text-transform: uppercase; letter-spacing: 0.5px; }
+                p.sub { margin: 0 0 14px 0; font-size: 0.85rem; color: #4a6a6f; line-height: 1.4; font-weight: 600; }
                 .pill-stat {
                     display: inline-flex; align-items: center; gap: 6px;
-                    background: rgba(243, 139, 168, 0.15); border: 1px solid rgba(243, 139, 168, 0.3);
-                    color: #f38ba8; padding: 4px 12px; border-radius: 9999px; font-size: 0.8rem;
-                    font-weight: 700; margin-bottom: 18px;
+                    background: #edf8f5; border: 1.5px solid #1a3236;
+                    color: #1a3236; padding: 4px 12px; border-radius: 9999px; font-size: 0.74rem;
+                    font-weight: 800; margin-bottom: 14px; box-shadow: 1px 1px 0px #1a3236;
                 }
                 .task-card {
-                    background: rgba(49, 50, 68, 0.6); border: 1px solid rgba(203, 166, 247, 0.25);
-                    border-radius: 12px; padding: 14px; text-align: left; margin-bottom: 20px;
+                    background: #edf8f5; border: 1.5px solid #1a3236;
+                    border-radius: 6px; padding: 12px; text-align: left; margin-bottom: 16px;
+                    box-shadow: 1.5px 1.5px 0px #1a3236;
                 }
                 .task-label {
                     display: flex; align-items: center; gap: 5px;
-                    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: #cba6f7; font-weight: 800; margin-bottom: 6px;
+                    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.6px; color: #4a6a6f; font-weight: 800; margin-bottom: 4px;
                 }
-                .task-text { font-size: 0.95rem; font-weight: 700; color: #ffffff; word-break: break-word; line-height: 1.35; }
+                .task-text { font-size: 0.88rem; font-weight: 800; color: #14282b; word-break: break-word; line-height: 1.35; }
                 .timer-bar {
-                    margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08);
-                    font-size: 0.78rem; color: #a6e3a1; display: flex; align-items: center; gap: 6px; font-weight: 600;
+                    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #1a3236;
+                    font-size: 0.76rem; color: #23484e; display: flex; align-items: center; gap: 6px; font-weight: 700;
                 }
-                .actions { display: flex; flex-direction: column; gap: 10px; }
+                .actions { display: flex; flex-direction: column; gap: 8px; }
                 .btn {
-                    border: none; border-radius: 12px; padding: 13px 18px; font-size: 0.92rem; font-weight: 700;
-                    cursor: pointer; transition: transform 0.15s, filter 0.2s, background-color 0.2s;
-                    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+                    border: 1.5px solid #1a3236; border-radius: 6px; padding: 10px 14px; font-size: 0.82rem; font-weight: 800;
+                    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+                    box-shadow: 2px 2px 0px #1a3236; transition: all 0.1s;
                 }
-                .btn:hover { filter: brightness(1.12); transform: translateY(-2px); }
-                .btn:active { transform: translateY(0); }
-                .btn-primary { background: #a6e3a1; color: #11111b; box-shadow: 0 4px 15px rgba(166, 227, 161, 0.3); }
-                .btn-row { display: flex; gap: 10px; }
-                .btn-secondary { background: rgba(49, 50, 68, 0.8); color: #cdd6f4; border: 1px solid rgba(255, 255, 255, 0.12); flex: 1; }
-                .btn-secondary:hover { background: rgba(69, 71, 90, 0.9); }
-                .btn-ghost { background: transparent; color: #a6adc8; border: 1px solid transparent; flex: 1; }
-                .btn-ghost:hover { color: #f38ba8; }
+                .btn:active { transform: translate(1px, 1px); box-shadow: 0px 0px 0px; }
+                .btn-primary { background: #5fa59b; color: #ffffff; }
+                .btn-row { display: flex; gap: 8px; }
+                .btn-secondary { background: #edf8f5; color: #14282b; flex: 1; }
+                .btn-secondary:hover { background: #d8f1ec; }
+                .btn-ghost { background: transparent; color: #4a6a6f; border: 1.5px solid #1a3236; flex: 1; }
+                .btn-ghost:hover { background: #edf8f5; color: #d9534f; }
             </style>
             <div class="backdrop">
                 <div class="modal">

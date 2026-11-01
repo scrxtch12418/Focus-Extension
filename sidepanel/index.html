@@ -10,287 +10,439 @@
 </head>
 
 <body>
-    <div class="container">
-        <!-- Sleek, Modern Borderless Micro-Bar (Replaces clunky top bar) -->
-        <div class="top-micro-bar">
-            <div class="brand-tag">
-                <span class="brand-icon" id="brandIcon"></span>
-                <span class="brand-name">Focus Center</span>
+    <!-- Pixel Art Clouds & Mountain Background (Inspired by Janhvi's Portfolio) -->
+    <div class="retro-backdrop">
+        <svg class="pixel-cloud pixel-cloud-1" viewBox="0 0 140 60">
+            <path d="M30 40 H10 V30 H0 V20 H20 V10 H50 V0 H80 V10 H110 V20 H140 V30 H130 V40 H120 V50 H40 V40 Z" />
+        </svg>
+        <svg class="pixel-cloud pixel-cloud-2" viewBox="0 0 140 60">
+            <path d="M20 40 H0 V20 H30 V10 H70 V0 H100 V10 H130 V20 H140 V40 H120 V50 H30 V40 Z" />
+        </svg>
+        <svg class="pixel-cloud pixel-cloud-3" viewBox="0 0 140 60">
+            <path d="M30 40 H10 V20 H40 V10 H80 V0 H110 V10 H130 V30 H120 V40 H50 V50 H30 V40 Z" />
+        </svg>
+        <div class="pixel-mountains"></div>
+    </div>
+
+    <!-- Main Outer Window Frame -->
+    <div class="retro-window-shell">
+        <!-- Top Window Header Bar -->
+        <header class="retro-window-header">
+            <div class="window-title-left">
+                <span class="window-sparkle-icon" id="brandIcon"></span>
+                <span>FOCUS_COMMAND_CENTER.EXE</span>
             </div>
-            <div class="top-actions">
-                <button id="openThemeBtn" class="btn-icon-subtle" title="Arc Theme Studio">
-                    <span id="themeBtnIcon"></span>
+            <div class="window-actions-right">
+                <button id="openThemeBtn" class="retro-btn-header" title="Select System Theme">
+                    <span id="themeBtnIcon"></span> THEMES [o o]
                 </button>
-                <button id="popOutBtn" class="btn-icon-subtle" title="Open in floating window">
+                <button id="popOutBtn" class="retro-btn-header retro-btn-icon" title="Open in floating window">
                     <span id="popOutBtnIcon"></span>
                 </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Daily Focus Analytics & Streaks -->
-        <section class="card analytics-card">
-            <div class="analytics-grid">
-                <div class="stat-box">
-                    <span class="stat-icon" id="streakIcon"></span>
-                    <div class="stat-value" id="streakCount">0</div>
-                    <div class="stat-label">Day Streak</div>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-icon" id="focusedIcon"></span>
-                    <div class="stat-value" id="todayFocusTime">0m</div>
-                    <div class="stat-label">Focused Today</div>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-icon" id="interceptedIcon"></span>
-                    <div class="stat-value" id="todayIntercepted">0</div>
-                    <div class="stat-label">Shorts Avoided</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Active Focus Music & Media Player -->
-        <section class="card media-card">
-            <div class="thumbnail-large" id="mediaThumb">
-                <div class="vinyl-disc" id="vinylDisc">
-                    <div class="vinyl-groove"></div>
-                    <div class="vinyl-center" id="vinylCenter">
-                        <span id="discCenterIcon"></span>
+        <!-- Edge-to-Edge Responsive Cards Grid -->
+        <main class="retro-grid">
+            <!-- 1. Daily Analytics & Focus Streaks -->
+            <section class="retro-card span-2 analytics-card">
+                <div class="card-retro-header">
+                    <div class="card-title-left">
+                        <span id="analyticsHeaderIcon"></span>
+                        <span>DAILY_METRICS</span>
+                    </div>
+                    <div class="retro-dots">
+                        <span class="retro-dot"></span>
+                        <span class="retro-dot"></span>
                     </div>
                 </div>
-            </div>
-            <div id="trackTitle" class="track-title">Lofi Focus Radio</div>
-            <div id="trackArtist" class="track-artist">Focus Command Center • 24/7 Deep Work</div>
-
-            <div class="controls" style="display: flex; gap: 20px; align-items: center; margin-bottom: 12px;">
-                <button class="btn-circle" id="prev" title="Previous Soundscape">
-                    <span id="prevIcon"></span>
-                </button>
-                <button class="btn-circle btn-accent btn-play-large" id="playPause" title="Play / Pause Music">
-                    <span id="playPauseIcon"></span>
-                </button>
-                <button class="btn-circle" id="next" title="Next Soundscape">
-                    <span id="nextIcon"></span>
-                </button>
-            </div>
-
-            <!-- Integrated Volume Slider in Media Player -->
-            <div class="player-volume-row">
-                <span id="volumeIcon" class="volume-speaker-icon"></span>
-                <input type="range" id="soundscapeVolume" min="0" max="100" value="50" class="volume-slider" title="Volume">
-                <span id="volumePercent" class="volume-percent">50%</span>
-            </div>
-        </section>
-
-        <!-- Pomodoro Timer Section -->
-        <section class="card">
-            <div class="active-focus-container" id="activeFocusContainer">
-                <div class="active-focus-label">
-                    <span id="targetGoalIcon"></span>
-                    <span>Current Focus Goal</span>
-                </div>
-                <div class="active-focus-bar">
-                    <span id="activeFocusText" class="active-focus-text">No active task set</span>
-                    <button id="quickCompleteTaskBtn" class="btn-micro" title="Mark focus task complete" style="display: none;">
-                        <span id="checkDoneIcon"></span> Done
-                    </button>
-                </div>
-            </div>
-
-            <div class="timer-adjuster">
-                <button class="btn-circle" id="decTime" title="Subtract 1 minute">
-                    <span id="minusIcon"></span>
-                </button>
-                <div id="timer">25:00</div>
-                <button class="btn-circle" id="incTime" title="Add 1 minute">
-                    <span id="plusIcon"></span>
-                </button>
-            </div>
-
-            <div class="session-setting">
-                <span>Target Sessions</span>
-                <input type="number" id="sessionTarget" value="4" min="1">
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                <button id="startTimer" class="btn-primary" style="flex: 3;">Start Focus</button>
-                <button id="restartTimer" class="btn-circle" style="flex: 1; border-radius: 25px;" title="Reset Timer">
-                    <span id="resetIcon"></span>
-                </button>
-            </div>
-
-            <div class="session-counter">Completed: <span id="completedSessions">0</span></div>
-
-            <!-- Soundscape Quick Selector -->
-            <div class="ambient-container">
-                <div class="ambient-header">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span id="headphonesIcon"></span>
-                        <span style="font-weight: 700; font-size: 0.8rem; color: var(--ctp-text);">Focus Audio Station</span>
-                    </div>
-                </div>
-                <div class="ambient-controls">
-                    <select id="soundscapeSelect" class="soundscape-select">
-                        <option value="lofi">Lofi Chill Radio</option>
-                        <option value="rain">Rain & Thunder Storm</option>
-                        <option value="noise">Deep Brown Noise</option>
-                        <option value="ocean">Ocean Waves</option>
-                        <option value="cafe">Cozy Café Ambience</option>
-                        <option value="binaural">40Hz Gamma Focus</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="settings-toggle">
-                <button id="toggleSettings">
-                    <span id="rulesSettingsIcon"></span>
-                    <span id="toggleSettingsLabel">Focus Rules</span>
-                </button>
-                <div id="settingsMenu" class="settings-content">
-                    <div class="option-row">
-                        <div>
-                            <span>Doomscroll Nudge</span>
-                            <div style="font-size: 0.72rem; color: var(--ctp-subtext);">Alert when scrolling Shorts & Reels</div>
+                <div class="card-body">
+                    <div class="analytics-grid">
+                        <div class="stat-box">
+                            <span class="stat-icon" id="streakIcon"></span>
+                            <div class="stat-value" id="streakCount">0</div>
+                            <div class="stat-label">Day Streak</div>
                         </div>
-                        <input type="checkbox" id="doomscrollToggle" class="slider-input" checked>
+                        <div class="stat-box">
+                            <span class="stat-icon" id="focusedIcon"></span>
+                            <div class="stat-value" id="todayFocusTime">0m</div>
+                            <div class="stat-label">Focused Today</div>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-icon" id="interceptedIcon"></span>
+                            <div class="stat-value" id="todayIntercepted">0</div>
+                            <div class="stat-label">Shorts Blocked</div>
+                        </div>
+                    </div>
+                    <div class="retro-pill-meter">
+                        <span>Daily Target Progress</span>
+                        <div class="pill-track">
+                            <div class="pill-fill" id="dailyGoalProgressFill" style="width: 0%;"></div>
+                        </div>
+                        <span id="dailyGoalProgressPercent">0%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Spotify & Focus Audio Player (Exact replica of Spotify card from photo) -->
+            <section class="retro-card spotify-card">
+                <div class="card-retro-header">
+                    <div class="card-title-left">
+                        <span id="spotifyHeaderIcon"></span>
+                        <span>Spotify</span>
+                    </div>
+                    <div class="retro-dots">
+                        <span class="retro-dot"></span>
+                        <span class="retro-dot"></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="spotify-top-row">
+                        <div class="spotify-track-meta">
+                            <div id="trackTitle" class="track-title">Lofi Focus Radio</div>
+                            <div id="trackArtist" class="track-artist">Focus Command Center • 24/7 Deep Work</div>
+                        </div>
+                        <div class="spotify-controls">
+                            <button class="btn-retro-ctrl" id="prev" title="Previous station">
+                                <span id="prevIcon"></span>
+                            </button>
+                            <button class="btn-retro-ctrl btn-primary-play" id="playPause" title="Play / Pause">
+                                <span id="playPauseIcon"></span>
+                            </button>
+                            <button class="btn-retro-ctrl" id="next" title="Next station">
+                                <span id="nextIcon"></span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="option-row">
-                        <div>
-                            <span>Shorts Daily Allowance</span>
-                            <div style="font-size: 0.72rem; color: var(--ctp-subtext);">Daily limit before strict lock</div>
+                    <!-- Spotify Progress Pill Bar (as seen in photo) -->
+                    <div class="spotify-progress-row">
+                        <span id="trackTimeCurrent">00:00</span>
+                        <div class="spotify-track-bar">
+                            <div id="spotifyTrackProgress" class="spotify-track-progress" style="width: 35%;"></div>
                         </div>
-                        <select id="shortsAllowance" class="styled-select">
-                            <option value="0">Strict (0m)</option>
-                            <option value="5">5 mins</option>
-                            <option value="10">10 mins</option>
-                            <option value="15" selected>15 mins (Default)</option>
-                            <option value="30">30 mins</option>
-                            <option value="-1">Unlimited</option>
+                        <span id="trackTimeTotal">25:00</span>
+                    </div>
+
+                    <!-- Soundscape & Volume Row -->
+                    <div class="spotify-footer-row">
+                        <select id="soundscapeSelect" class="retro-select" title="Focus Soundscape">
+                            <option value="lofi">Lofi Chill Radio</option>
+                            <option value="rain">Rain & Thunder Storm</option>
+                            <option value="noise">Deep Brown Noise</option>
+                            <option value="ocean">Ocean Waves</option>
+                            <option value="cafe">Cozy Café Ambience</option>
+                            <option value="binaural">40Hz Gamma Focus</option>
                         </select>
-                    </div>
-
-                    <div class="option-row">
-                        <div>
-                            <span>Timer Chime Bell</span>
-                            <div style="font-size: 0.72rem; color: var(--ctp-subtext);">Singing bowl chime on finish</div>
+                        <div class="spotify-volume-group">
+                            <span id="volumeIcon"></span>
+                            <input type="range" id="soundscapeVolume" min="0" max="100" value="50" class="volume-slider" title="Volume">
+                            <span id="volumePercent" class="volume-readout">50%</span>
                         </div>
-                        <input type="checkbox" id="timerChimeToggle" class="slider-input" checked>
-                    </div>
-
-                    <div class="option-row">
-                        <span>Block All Sites</span>
-                        <input type="checkbox" id="blockAll" class="slider-input">
-                    </div>
-
-                    <div class="option-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                        <span>Selective Block</span>
-                        <textarea id="blockedSites" rows="3" placeholder="youtube.com&#10;instagram.com"></textarea>
-                    </div>
-
-                    <div class="option-row">
-                        <span>Remove JS (Clean Article)</span>
-                        <input type="checkbox" id="removeJS" class="slider-input">
-                    </div>
-
-                    <div class="shortcuts-guide">
-                        <div class="shortcuts-title">⚡ Global Keyboard Shortcuts</div>
-                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> <span>Start/Pause Timer</span></div>
-                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> <span>Toggle Focus Music</span></div>
-                        <div class="shortcut-item"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> <span>Clean Article Reader</span></div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Focus Tasks & To-Do List -->
-        <section class="card todo-card">
-            <div class="todo-header">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span id="tasksHeaderIcon"></span>
-                    <h2 style="margin: 0; font-size: 1rem; color: var(--ctp-text); font-weight: 700;">Focus Tasks</h2>
-                    <span id="todoBadge" class="todo-badge">0/0</span>
+            <!-- 3. Pomodoro Focus Timer -->
+            <section class="retro-card">
+                <div class="card-retro-header">
+                    <div class="card-title-left">
+                        <span id="timerHeaderIcon"></span>
+                        <span>Focus Timer</span>
+                    </div>
+                    <div class="retro-dots">
+                        <span class="retro-dot"></span>
+                        <span class="retro-dot"></span>
+                    </div>
                 </div>
-                <button id="clearCompletedBtn" class="btn-text-sm" title="Clear completed tasks">Clear Done</button>
-            </div>
+                <div class="card-body">
+                    <!-- Active Focus Goal Box -->
+                    <div class="active-focus-container" id="activeFocusContainer">
+                        <div class="active-goal-meta">
+                            <span class="active-goal-tag">Target Goal</span>
+                            <span id="activeFocusText" class="active-goal-text">No active task set</span>
+                        </div>
+                        <button id="quickCompleteTaskBtn" class="btn-retro-mini" title="Mark focus task done" style="display: none;">
+                            <span id="checkDoneIcon"></span> Done
+                        </button>
+                    </div>
 
-            <form id="todoForm" class="todo-input-row">
-                <input type="text" id="todoInput" placeholder="Add a focus task... (Press Enter)" maxlength="140" autocomplete="off">
-                <button type="submit" id="addTodoBtn" class="btn-add" title="Add Task">
-                    <span id="addTaskIcon"></span>
-                </button>
-            </form>
+                    <!-- LCD Inset Timer Box -->
+                    <div class="timer-retro-box">
+                        <button class="timer-adjust-btn" id="decTime" title="Subtract 1 minute">
+                            <span id="minusIcon"></span>
+                        </button>
+                        <div id="timer" class="timer-digits">25:00</div>
+                        <button class="timer-adjust-btn" id="incTime" title="Add 1 minute">
+                            <span id="plusIcon"></span>
+                        </button>
+                    </div>
 
-            <div class="todo-filters">
-                <button type="button" class="filter-btn active" data-filter="all">All</button>
-                <button type="button" class="filter-btn" data-filter="active">Active</button>
-                <button type="button" class="filter-btn" data-filter="completed">Done</button>
-            </div>
+                    <div class="session-meta-row">
+                        <span>Target Sessions:</span>
+                        <input type="number" id="sessionTarget" value="4" min="1" class="session-target-input">
+                        <span>Completed: <strong id="completedSessions">0</strong></span>
+                    </div>
 
-            <ul id="todoList" class="todo-list">
-                <!-- Tasks will be rendered here dynamically -->
-            </ul>
-        </section>
+                    <div class="timer-actions-row">
+                        <button id="startTimer" class="btn-timer-primary">Start Focus</button>
+                        <button id="restartTimer" class="btn-timer-reset" title="Reset Timer">
+                            <span id="resetIcon"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Arc-Style Theme Customization Centre Modal -->
-        <div id="themeModal" class="theme-modal-backdrop" style="display: none;">
-            <div class="theme-modal">
-                <div class="theme-modal-header">
+            <!-- 4. Focus Tasks & Goals Card -->
+            <section class="retro-card">
+                <div class="card-retro-header">
+                    <div class="card-title-left">
+                        <span id="tasksHeaderIcon"></span>
+                        <span>Focus Tasks</span>
+                        <span id="todoBadge" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">[0/0]</span>
+                    </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span class="theme-header-icon" id="themeModalHeaderIcon"></span>
-                        <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--ctp-text);">Arc Theme Studio</h3>
-                    </div>
-                    <button id="closeThemeBtn" class="btn-icon-subtle" title="Close Theme Studio">
-                        <span id="closeThemeIcon"></span>
-                    </button>
-                </div>
-
-                <p class="theme-subtitle">Drag your mouse across the 2D grid to sculpt your custom chromatic palette</p>
-
-                <!-- 2D Arc Chromatic Grid -->
-                <div class="arc-picker-wrapper">
-                    <div id="arcColorGrid" class="arc-color-grid">
-                        <div id="arcPickerHandle" class="arc-picker-handle"></div>
+                        <button id="clearCompletedBtn" class="btn-retro-mini" title="Clear completed tasks">Clear Done</button>
+                        <div class="retro-dots">
+                            <span class="retro-dot"></span>
+                            <span class="retro-dot"></span>
+                        </div>
                     </div>
                 </div>
+                <div class="card-body">
+                    <form id="todoForm" class="todo-input-row">
+                        <input type="text" id="todoInput" class="retro-input" placeholder="Add a focus goal... (Press Enter)" maxlength="140" autocomplete="off">
+                        <button type="submit" id="addTodoBtn" class="btn-retro-add" title="Add Task">
+                            <span id="addTaskIcon"></span> + Add
+                        </button>
+                    </form>
 
-                <!-- Theme Color Preview & Readout -->
-                <div class="theme-preview-row">
-                    <div class="theme-preview-chip" id="themePreviewChip"></div>
-                    <div class="theme-preview-info">
-                        <span id="themeColorName" class="theme-color-name">Custom Palette</span>
-                        <span id="themeHslValue" class="theme-hsl-value">HSL: 265°, 85%, 65%</span>
+                    <div class="todo-filters-row">
+                        <button type="button" class="filter-btn active" data-filter="all">All</button>
+                        <button type="button" class="filter-btn" data-filter="active">Active</button>
+                        <button type="button" class="filter-btn" data-filter="completed">Done</button>
                     </div>
-                    <button id="resetThemeBtn" class="btn-text-sm" title="Reset to Catppuccin Mocha">Reset</button>
+
+                    <ul id="todoList" class="todo-list">
+                        <!-- Tasks rendered dynamically -->
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 5. Focus Rules & Doomscroll Interceptor Card -->
+            <section class="retro-card">
+                <div class="card-retro-header">
+                    <div class="card-title-left">
+                        <span id="rulesHeaderIcon"></span>
+                        <span>Focus Rules</span>
+                    </div>
+                    <div class="retro-dots">
+                        <span class="retro-dot"></span>
+                        <span class="retro-dot"></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="rules-list">
+                        <div class="rule-row">
+                            <div class="rule-meta">
+                                <span class="rule-title">Anti-Doomscroll Intervention</span>
+                                <span class="rule-desc">Pop up reminder on YT Shorts & IG Reels</span>
+                            </div>
+                            <input type="checkbox" id="doomscrollToggle" class="retro-switch" checked>
+                        </div>
+
+                        <div class="rule-row">
+                            <div class="rule-meta">
+                                <span class="rule-title">Shorts Daily Allowance</span>
+                                <span class="rule-desc">Quota before strict lock</span>
+                            </div>
+                            <select id="shortsAllowance" class="retro-select" style="flex: 0 0 auto; width: 100px;">
+                                <option value="15">15 mins</option>
+                                <option value="30" selected>30 mins</option>
+                                <option value="0">Unlimited</option>
+                            </select>
+                        </div>
+
+                        <div class="rule-row">
+                            <div class="rule-meta">
+                                <span class="rule-title">Timer Chime Bell</span>
+                                <span class="rule-desc">Singing bowl chime on finish</span>
+                            </div>
+                            <input type="checkbox" id="timerChimeToggle" class="retro-switch" checked>
+                        </div>
+
+                        <div class="rule-row">
+                            <div class="rule-meta">
+                                <span class="rule-title">Block All Sites</span>
+                                <span class="rule-desc">Emergency total focus lock</span>
+                            </div>
+                            <input type="checkbox" id="blockAll" class="retro-switch">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span class="rule-title">Selective Block Sites:</span>
+                            <textarea id="blockedSites" class="retro-textarea" rows="2" placeholder="youtube.com&#10;instagram.com"></textarea>
+                        </div>
+
+                        <div class="rule-row">
+                            <div class="rule-meta">
+                                <span class="rule-title">Clean Article Reader</span>
+                                <span class="rule-desc">Strip scripts & ads on page</span>
+                            </div>
+                            <input type="checkbox" id="removeJS" class="retro-switch">
+                        </div>
+
+                        <div class="shortcuts-table">
+                            <div style="font-weight: 800; font-size: 0.72rem; margin-bottom: 2px;">⚡ Global Shortcuts</div>
+                            <div class="shortcut-row"><span>Start/Pause Timer</span><kbd>Alt+Shift+F</kbd></div>
+                            <div class="shortcut-row"><span>Toggle Audio</span><kbd>Alt+Shift+M</kbd></div>
+                            <div class="shortcut-row"><span>Clean Article</span><kbd>Alt+Shift+Z</kbd></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Retro Theme Customization Centre Modal -->
+    <div id="themeModal" class="retro-modal-backdrop" style="display: none;">
+        <div class="retro-modal-window">
+            <div class="card-retro-header">
+                <div class="card-title-left">
+                    <span id="themeModalHeaderIcon"></span>
+                    <span>THEME_SELECTOR.EXE</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <button id="closeThemeBtn" class="btn-retro-mini" title="Close Theme Selector">
+                        <span id="closeThemeIcon"></span> [✕]
+                    </button>
+                    <div class="retro-dots">
+                        <span class="retro-dot"></span>
+                        <span class="retro-dot"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 10px 14px 4px 14px; font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">
+                Select your preferred retro system aesthetic:
+            </div>
+
+            <div class="modal-theme-grid">
+                <!-- 1. Pixel Pastel Sage (Default inspiration theme) -->
+                <div class="theme-card-option" data-theme="sage">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Pixel Pastel (Sage)</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #9ec5be;" title="Sky Canvas"></div>
+                        <div class="theme-chip" style="background: #ffffff;" title="Card Surface"></div>
+                        <div class="theme-chip" style="background: #5fa59b;" title="Accent Pill"></div>
+                        <div class="theme-chip" style="background: #1a3236;" title="Border Stroke"></div>
+                    </div>
                 </div>
 
-                <!-- Arc Preset Palettes -->
-                <div class="arc-presets-title">Curated Arc Palettes</div>
-                <div class="arc-presets-grid">
-                    <button type="button" class="preset-pill" data-h="267" data-s="83" data-l="60" style="--p-color: #a855f7;">
-                        <span class="preset-dot"></span>Electric Lilac
-                    </button>
-                    <button type="button" class="preset-pill" data-h="15" data-s="88" data-l="60" style="--p-color: #f97316;">
-                        <span class="preset-dot"></span>Arc Sunset
-                    </button>
-                    <button type="button" class="preset-pill" data-h="190" data-s="88" data-l="52" style="--p-color: #06b6d4;">
-                        <span class="preset-dot"></span>Oceanic Cyan
-                    </button>
-                    <button type="button" class="preset-pill" data-h="152" data-s="75" data-l="54" style="--p-color: #10b981;">
-                        <span class="preset-dot"></span>Emerald Zen
-                    </button>
-                    <button type="button" class="preset-pill" data-h="335" data-s="88" data-l="62" style="--p-color: #ec4899;">
-                        <span class="preset-dot"></span>Cyber Rose
-                    </button>
-                    <button type="button" class="preset-pill" data-h="38" data-s="85" data-l="58" style="--p-color: #eab308;">
-                        <span class="preset-dot"></span>Warm Amber
-                    </button>
-                    <button type="button" class="preset-pill" data-h="220" data-s="15" data-l="40" style="--p-color: #64748b;">
-                        <span class="preset-dot"></span>Slate Stealth
-                    </button>
+                <!-- 2. Catppuccin Mocha -->
+                <div class="theme-card-option" data-theme="mocha">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Catppuccin Mocha</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #1e1e2e;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #313244;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #cba6f7;" title="Mauve"></div>
+                        <div class="theme-chip" style="background: #a6e3a1;" title="Green"></div>
+                    </div>
+                </div>
+
+                <!-- 3. Catppuccin Latte -->
+                <div class="theme-card-option" data-theme="latte">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Catppuccin Latte</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #eff1f5;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #ffffff;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #7287fd;" title="Lavender"></div>
+                        <div class="theme-chip" style="background: #4c4f69;" title="Text"></div>
+                    </div>
+                </div>
+
+                <!-- 4. Dracula -->
+                <div class="theme-card-option" data-theme="dracula">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Dracula</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #282a36;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #343746;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #bd93f9;" title="Purple"></div>
+                        <div class="theme-chip" style="background: #ff79c6;" title="Pink"></div>
+                    </div>
+                </div>
+
+                <!-- 5. Nord -->
+                <div class="theme-card-option" data-theme="nord">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Nord Arctic</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #2e3440;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #3b4252;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #88c0d0;" title="Frost"></div>
+                        <div class="theme-chip" style="background: #a3be8c;" title="Aurora"></div>
+                    </div>
+                </div>
+
+                <!-- 6. Rose Pine -->
+                <div class="theme-card-option" data-theme="rosepine">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Rosé Pine</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #191724;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #26233a;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #eb6f92;" title="Love"></div>
+                        <div class="theme-chip" style="background: #c4a7e7;" title="Iris"></div>
+                    </div>
+                </div>
+
+                <!-- 7. Tokyo Night -->
+                <div class="theme-card-option" data-theme="tokyonight">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Tokyo Night</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #1a1b26;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #24283b;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #7dcfff;" title="Cyan"></div>
+                        <div class="theme-chip" style="background: #bb9af7;" title="Violet"></div>
+                    </div>
+                </div>
+
+                <!-- 8. Cyber Amber (CRT Terminal) -->
+                <div class="theme-card-option" data-theme="amber">
+                    <div class="theme-card-header">
+                        <span class="theme-name">Cyber Amber (CRT)</span>
+                        <span class="theme-active-tag">✓ ACTIVE</span>
+                    </div>
+                    <div class="theme-palette-preview">
+                        <div class="theme-chip" style="background: #0a0802;" title="Canvas"></div>
+                        <div class="theme-chip" style="background: #1c1507;" title="Surface"></div>
+                        <div class="theme-chip" style="background: #ffb000;" title="Amber"></div>
+                        <div class="theme-chip" style="background: #ffcf56;" title="Glow"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script src="main.js"></script>
 </body>
 
